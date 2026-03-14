@@ -3,20 +3,34 @@
  * 管理当前页面、offset、分页等状态
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { Page } from '../../utils/paginate.js';
 
 interface ReaderState {
   currentPage: number;
   totalPages: number;
-  pages: Page[];
 }
 
-export function useReader(pages: Page[]) {
+export function useReader(pages: Page[], initialByteOffset?: number) {
+  // 根据 initialByteOffset 找到初始页
+  const initialPage = useMemo(() => {
+    if (!initialByteOffset || pages.length === 0) return 0;
+
+    // 找到 byte_offset <= initialByteOffset 的最后一页
+    let targetPage = 0;
+    for (let i = 0; i < pages.length; i++) {
+      if (pages[i].byteOffset <= initialByteOffset) {
+        targetPage = i;
+      } else {
+        break;
+      }
+    }
+    return targetPage;
+  }, [pages, initialByteOffset]);
+
   const [state, setState] = useState<ReaderState>({
-    currentPage: 0,
+    currentPage: initialPage,
     totalPages: pages.length,
-    pages,
   });
 
   const nextPage = useCallback(() => {
@@ -40,21 +54,53 @@ export function useReader(pages: Page[]) {
     }));
   }, []);
 
+  /**
+   * 根据 byte_offset 跳转到对应页
+   */
+  const goToOffset = useCallback((byteOffset: number) => {
+    let targetPage = 0;
+    for (let i = 0; i < pages.length; i++) {
+      if (pages[i].byteOffset <= byteOffset) {
+        targetPage = i;
+      } else {
+        break;
+      }
+    }
+    setState((prev) => ({
+      ...prev,
+      currentPage: targetPage,
+    }));
+  }, [pages]);
+
   const getCurrentPage = useCallback((): Page | undefined => {
-    return state.pages[state.currentPage];
-  }, [state.currentPage, state.pages]);
+    return pages[state.currentPage];
+  }, [state.currentPage, pages]);
+
+  /**
+   * 获取当前页的 byte_offset（用于保存进度）
+   */
+  const getCurrentOffset = useCallback((): number => {
+    return pages[state.currentPage]?.byteOffset ?? 0;
+  }, [state.currentPage, pages]);
 
   const getPercent = useCallback((): number => {
     if (state.totalPages === 0) return 0;
     return (state.currentPage + 1) / state.totalPages;
   }, [state.currentPage, state.totalPages]);
 
+  const isFirstPage = state.currentPage === 0;
+  const isLastPage = state.currentPage === state.totalPages - 1;
+
   return {
     ...state,
     nextPage,
     prevPage,
     goToPage,
+    goToOffset,
     getCurrentPage,
+    getCurrentOffset,
     getPercent,
+    isFirstPage,
+    isLastPage,
   };
 }

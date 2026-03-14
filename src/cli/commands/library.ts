@@ -4,8 +4,8 @@
  */
 
 import type { CommandModule } from 'yargs';
+import { renderApp } from '../../ui/renderApp.js';
 import { BookService } from '../../services/BookService.js';
-import { RecentService } from '../../services/RecentService.js';
 import { logger } from '../../utils/logger.js';
 
 interface LibraryArgs {
@@ -24,23 +24,25 @@ export const libraryCommand: CommandModule<object, LibraryArgs> = {
   },
   handler: async (argv) => {
     try {
-      const bookService = new BookService();
-      const recentService = new RecentService();
+      // 如果有搜索参数，以非交互模式输出
+      if (argv.search) {
+        const bookService = new BookService();
+        const books = bookService.searchBooks(argv.search);
 
-      const books = argv.search
-        ? bookService.searchBooks(argv.search)
-        : recentService.getRecentBooks();
+        if (books.length === 0) {
+          console.log(`📚 未找到匹配「${argv.search}」的书籍。`);
+          return;
+        }
 
-      if (books.length === 0) {
-        console.log('📚 书架为空。使用 novel import <file> 导入你的第一本书。');
+        console.log(`📚 搜索结果 (${books.length} 本):\n`);
+        books.forEach((book, index) => {
+          console.log(`  ${index + 1}. ${book.title}  [${book.id}]  (${book.format})`);
+        });
         return;
       }
 
-      // TODO: 启动 Ink TUI 书架页面
-      console.log('📚 书架:');
-      books.forEach((book, index) => {
-        console.log(`  ${index + 1}. ${book.title} (${book.id})`);
-      });
+      // 无搜索参数，启动交互式书架
+      renderApp({ initialPage: 'library' });
     } catch (error) {
       logger.error('获取书架失败:', error);
       process.exit(1);

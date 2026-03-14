@@ -14,15 +14,18 @@ export type PageRoute = 'resume' | 'library' | 'reader';
 interface AppProps {
   initialPage?: PageRoute;
   bookId?: string;
+  initialByteOffset?: number;
 }
 
-export function App({ initialPage = 'resume', bookId }: AppProps) {
+export function App({ initialPage = 'resume', bookId, initialByteOffset }: AppProps) {
   const [currentPage, setCurrentPage] = useState<PageRoute>(initialPage);
   const [currentBookId, setCurrentBookId] = useState<string | undefined>(bookId);
+  const [currentByteOffset, setCurrentByteOffset] = useState<number | undefined>(initialByteOffset);
 
-  const navigateTo = (page: PageRoute, targetBookId?: string) => {
+  const navigateTo = (page: PageRoute, targetBookId?: string, byteOffset?: number) => {
     setCurrentPage(page);
     if (targetBookId) setCurrentBookId(targetBookId);
+    if (byteOffset !== undefined) setCurrentByteOffset(byteOffset);
   };
 
   return (
@@ -34,7 +37,11 @@ export function App({ initialPage = 'resume', bookId }: AppProps) {
         <LibraryPage onNavigate={navigateTo} />
       )}
       {currentPage === 'reader' && currentBookId && (
-        <ReaderPage bookId={currentBookId} onNavigate={navigateTo} />
+        <ReaderPage
+          bookId={currentBookId}
+          initialByteOffset={currentByteOffset}
+          onNavigate={navigateTo}
+        />
       )}
       {currentPage === 'reader' && !currentBookId && (
         <Box>
