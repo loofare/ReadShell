@@ -31,8 +31,8 @@ npm install -g readshell
 ### 基本使用
 
 ```bash
-# 导入一本书
-novel import ~/books/my-novel.txt
+# 导入一本书 (支持 .txt 和 .epub)
+novel import ~/books/my-novel.epub
 
 # 恢复上次阅读（零摩擦入口）
 novel resume
@@ -42,6 +42,9 @@ novel open <book-id>
 
 # 查看书架
 novel library
+
+# 移除书籍与记录
+novel remove <book-id>
 ```
 
 ### 阅读器快捷键
@@ -50,8 +53,11 @@ novel library
 |---|---|
 | `空格` / `j` / `↓` | 下一页 |
 | `k` / `↑` | 上一页 |
-| `c` | 章节列表 |
-| `q` | 退出并保存进度 |
+| `c` | 章节列表及书签列表 |
+| `Tab` | 章节弹出层中切换【目录/书签】 |
+| `m` / `M` | 将当前页首行标记为书签 |
+| `b` / `Esc` | Boss Key (老板键)，秒速伪装终端报错并自动存档 |
+| `q` | 正常退出并保存进度 |
 | `?` | 帮助 |
 
 ## 🏗️ 技术栈
