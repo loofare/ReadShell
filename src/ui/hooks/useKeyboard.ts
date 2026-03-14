@@ -11,13 +11,15 @@ interface KeyboardHandlers {
   onQuit?: () => void;
   onChapterList?: () => void;
   onHelp?: () => void;
+  onBossKey?: () => void;
 }
 
-export function useKeyboard(handlers: KeyboardHandlers) {
+export function useKeyboard(handlers: KeyboardHandlers, isActive: boolean = true) {
   const isRawModeSupported = process.stdin.isTTY ?? false;
+  const shouldListen = isRawModeSupported && isActive;
 
   useInput((input, key) => {
-    // 翻页：空格 / j / 下箭头 → 下一页
+    // 翻页：空格 / j / 下箭头 / f → 下一页
     if (input === ' ' || input === 'j' || key.downArrow || input === 'f') {
       handlers.onNext?.();
     }
@@ -41,5 +43,10 @@ export function useKeyboard(handlers: KeyboardHandlers) {
     if (input === '?') {
       handlers.onHelp?.();
     }
-  }, { isActive: isRawModeSupported });
+    
+    // 老板键
+    if (handlers.onBossKey && (key.escape || input === 'esc' || input === 'b' || input === 'B')) {
+      handlers.onBossKey?.();
+    }
+  }, { isActive: shouldListen });
 }

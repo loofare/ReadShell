@@ -30,7 +30,14 @@ export class ChapterService {
   }
 
   /**
-   * 根据 byte_offset 找到当前所在章节
+   * 获取指定书籍下的所有章节
+   */
+  getChaptersByBookId(bookId: string): ChapterRecord[] {
+    return this.chapterModel.findByBookId(bookId);
+  }
+
+  /**
+   * 根据 offset 查询当前所属章节（用于高亮当前所在章）
    */
   getChapterByOffset(bookId: string, byteOffset: number): ChapterRecord | undefined {
     const chapters = this.chapterModel.findByBookId(bookId);

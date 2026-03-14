@@ -14,6 +14,7 @@ import { Box, Text, useApp, useStdout } from 'ink';
 import type { PageRoute } from '../App.js';
 import { TextRenderer } from '../components/TextRenderer.js';
 import { StatusBar } from '../components/StatusBar.js';
+import { ChapterNav } from '../components/ChapterNav.js';
 import { useReader } from '../hooks/useReader.js';
 import { useKeyboard } from '../hooks/useKeyboard.js';
 import { paginate, type Page } from '../../utils/paginate.js';
@@ -22,6 +23,8 @@ import { BookModel, type BookRecord } from '../../db/models/Book.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { ChapterService } from '../../services/ChapterService.js';
 import { RecentService } from '../../services/RecentService.js';
+import type { ChapterRecord } from '../../db/models/Chapter.js';
+import { triggerBossKey } from '../../utils/bossKey.js';
 import { logger } from '../../utils/logger.js';
 
 interface ReaderPageProps {
@@ -50,18 +53,28 @@ function ReaderContent({
 }) {
   const { exit } = useApp();
   const [chapterTitle, setChapterTitle] = useState<string | undefined>();
+  const [currentChapter, setCurrentChapter] = useState<ChapterRecord | undefined>();
+  const [showChapterNav, setShowChapterNav] = useState(false);
+  const [allChapters, setAllChapters] = useState<ChapterRecord[]>([]);
 
   const progressServiceRef = useRef(new ProgressService());
   const chapterServiceRef = useRef(new ChapterService());
 
   const reader = useReader(pages, initialByteOffset);
 
-  // 更新当前章节标题
+  // 加载并更新当前章节信息
   useEffect(() => {
     const currentOffset = reader.getCurrentOffset();
     const chapter = chapterServiceRef.current.getChapterByOffset(bookId, currentOffset);
+    setCurrentChapter(chapter ?? undefined);
     setChapterTitle(chapter?.title ?? undefined);
   }, [reader.currentPage, bookId]);
+
+  // 获取该书全部章节目录用于渲染导航
+  useEffect(() => {
+    const chaptersList = chapterServiceRef.current.getChaptersByBookId(bookId);
+    setAllChapters(chaptersList);
+  }, [bookId]);
 
   /**
    * 自动在组件卸载时保存进度
@@ -78,31 +91,49 @@ function ReaderContent({
     };
   }, [bookId, reader]);
 
-  // 键盘事件
-  useKeyboard({
-    onNext: () => reader.nextPage(),
-    onPrev: () => reader.prevPage(),
-    onQuit: () => exit(),
-  });
+  // 拦截全局键盘事件
+  useKeyboard(
+    {
+      onNext: () => reader.nextPage(),
+      onPrev: () => reader.prevPage(),
+      onQuit: () => exit(),
+      onChapterList: () => setShowChapterNav(true),
+      onBossKey: () => triggerBossKey(),
+    },
+    !showChapterNav, // 如果浮层显示，则停止普通的阅读快捷键
+  );
 
   const currentPage = reader.getCurrentPage();
   const currentLines = currentPage?.lines ?? [];
 
   return (
     <Box flexDirection="column" height={termHeight}>
-      {/* 正文内容区域 */}
-      <Box flexDirection="column" flexGrow={1} paddingX={1}>
-        <TextRenderer lines={currentLines} height={contentHeight} />
-      </Box>
-
-      {/* 状态栏 */}
-      <StatusBar
-        bookTitle={book.title}
-        percent={reader.getPercent()}
-        chapterTitle={chapterTitle}
-        currentPage={reader.currentPage + 1}
-        totalPages={reader.totalPages}
-      />
+      {/* 相对定位于容器中，使用 flex 布局进行展现。章节模式下隐藏正文 */}
+      {!showChapterNav ? (
+        <>
+          <Box flexDirection="column" flexGrow={1} paddingX={1}>
+            <TextRenderer lines={currentLines} height={contentHeight} />
+          </Box>
+          <StatusBar
+            bookTitle={book.title}
+            percent={reader.getPercent()}
+            chapterTitle={chapterTitle}
+            currentPage={reader.currentPage + 1}
+            totalPages={reader.totalPages}
+          />
+        </>
+      ) : (
+        <ChapterNav
+          chapters={allChapters}
+          currentChapterId={currentChapter?.id}
+          termHeight={termHeight}
+          onSelect={(offset) => {
+            reader.goToOffset(offset);
+            setShowChapterNav(false);
+          }}
+          onClose={() => setShowChapterNav(false)}
+        />
+      )}
     </Box>
   );
 }
