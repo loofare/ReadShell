@@ -37,6 +37,7 @@
     "chardet": "^2.0.0",
     "conf": "^13.0.0",
     "epub2": "^3.0.2",
+    "html-to-text": "^9.0.5",
     "iconv-lite": "^0.6.3",
     "ink": "^5.1.0",
     "nanoid": "^5.0.9",
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
+    "@types/html-to-text": "^9.0.4",
     "@types/react": "^18.3.12",
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "^8.0.0",

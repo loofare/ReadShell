@@ -23,8 +23,11 @@ import { BookModel, type BookRecord } from '../../db/models/Book.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { ChapterService } from '../../services/ChapterService.js';
 import { RecentService } from '../../services/RecentService.js';
+import { BookmarkService } from '../../services/BookmarkService.js';
 import type { ChapterRecord } from '../../db/models/Chapter.js';
+import type { BookmarkRecord } from '../../db/models/Bookmark.js';
 import { triggerBossKey } from '../../utils/bossKey.js';
+import { estimateReadingTime, formatReadingTime } from '../../utils/time.js';
 import { logger } from '../../utils/logger.js';
 
 interface ReaderPageProps {
@@ -56,9 +59,12 @@ function ReaderContent({
   const [currentChapter, setCurrentChapter] = useState<ChapterRecord | undefined>();
   const [showChapterNav, setShowChapterNav] = useState(false);
   const [allChapters, setAllChapters] = useState<ChapterRecord[]>([]);
+  const [allBookmarks, setAllBookmarks] = useState<BookmarkRecord[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const progressServiceRef = useRef(new ProgressService());
   const chapterServiceRef = useRef(new ChapterService());
+  const bookmarkServiceRef = useRef(new BookmarkService());
 
   const reader = useReader(pages, initialByteOffset);
 
@@ -70,11 +76,38 @@ function ReaderContent({
     setChapterTitle(chapter?.title ?? undefined);
   }, [reader.currentPage, bookId]);
 
-  // 获取该书全部章节目录用于渲染导航
+  // 获取该书全部章节及书签用于渲染导航
   useEffect(() => {
     const chaptersList = chapterServiceRef.current.getChaptersByBookId(bookId);
     setAllChapters(chaptersList);
-  }, [bookId]);
+    
+    if (showChapterNav) {
+      setAllBookmarks(bookmarkServiceRef.current.getBookmarksByBookId(bookId));
+    }
+  }, [bookId, showChapterNav]);
+
+  /**
+   * 取当前页首行生成书签名
+   */
+  const handleAddBookmark = () => {
+    const currentPageInfo = reader.getCurrentPage();
+    if (!currentPageInfo) return;
+
+    let markTitle = '无标题书签';
+    for (const line of currentPageInfo.lines) {
+      const stripped = line.trim();
+      if (stripped.length > 0) {
+        markTitle = stripped.slice(0, 15) + (stripped.length > 15 ? '...' : '');
+        break;
+      }
+    }
+
+    const currentOffset = reader.getCurrentOffset();
+    bookmarkServiceRef.current.addBookmark(bookId, markTitle, currentOffset);
+    
+    setToastMessage(`✓ 增加书签: ${markTitle}`);
+    setTimeout(() => setToastMessage(null), 2000);
+  };
 
   /**
    * 自动在组件卸载时保存进度
@@ -99,12 +132,22 @@ function ReaderContent({
       onQuit: () => exit(),
       onChapterList: () => setShowChapterNav(true),
       onBossKey: () => triggerBossKey(),
+      onBookmarkAdd: handleAddBookmark,
     },
     !showChapterNav, // 如果浮层显示，则停止普通的阅读快捷键
   );
 
   const currentPage = reader.getCurrentPage();
   const currentLines = currentPage?.lines ?? [];
+  // The contentHeight prop is already passed, but the instruction redefines it.
+  // Assuming the user intends to use this new calculation for contentHeight within ReaderContent.
+  const calculatedContentHeight = Math.max(1, termHeight - 2);
+
+  // 计算剩余阅读时间：总字符近似于字节数的 1/3 (utf-8 场景下)，中文字符占绝大部分
+  const totalChars = (book.file_size ?? 0) / 3;
+  const remainingChars = Math.max(0, totalChars * (1 - reader.getPercent()));
+  const remainingMinutes = estimateReadingTime(remainingChars, true);
+  const remainingTimeStr = formatReadingTime(remainingMinutes);
 
   return (
     <Box flexDirection="column" height={termHeight}>
@@ -112,7 +155,7 @@ function ReaderContent({
       {!showChapterNav ? (
         <>
           <Box flexDirection="column" flexGrow={1} paddingX={1}>
-            <TextRenderer lines={currentLines} height={contentHeight} />
+            <TextRenderer lines={currentLines} height={calculatedContentHeight} />
           </Box>
           <StatusBar
             bookTitle={book.title}
@@ -120,11 +163,18 @@ function ReaderContent({
             chapterTitle={chapterTitle}
             currentPage={reader.currentPage + 1}
             totalPages={reader.totalPages}
+            remainingTime={remainingTimeStr}
           />
+          {toastMessage && (
+            <Box alignSelf="flex-end" marginTop={-2} marginRight={1} borderStyle="round" borderColor="green" paddingX={1}>
+              <Text color="green">{toastMessage}</Text>
+            </Box>
+          )}
         </>
       ) : (
         <ChapterNav
           chapters={allChapters}
+          bookmarks={allBookmarks}
           currentChapterId={currentChapter?.id}
           termHeight={termHeight}
           onSelect={(offset) => {

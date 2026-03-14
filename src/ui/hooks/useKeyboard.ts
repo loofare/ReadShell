@@ -12,6 +12,7 @@ interface KeyboardHandlers {
   onChapterList?: () => void;
   onHelp?: () => void;
   onBossKey?: () => void;
+  onBookmarkAdd?: () => void;
 }
 
 export function useKeyboard(handlers: KeyboardHandlers, isActive: boolean = true) {
@@ -47,6 +48,11 @@ export function useKeyboard(handlers: KeyboardHandlers, isActive: boolean = true
     // 老板键
     if (handlers.onBossKey && (key.escape || input === 'esc' || input === 'b' || input === 'B')) {
       handlers.onBossKey?.();
+    }
+    
+    // 按 m 或 M 加书签
+    if (handlers.onBookmarkAdd && (input === 'm' || input === 'M')) {
+      handlers.onBookmarkAdd?.();
     }
   }, { isActive: shouldListen });
 }

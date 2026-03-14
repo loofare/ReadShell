@@ -9,7 +9,7 @@ import { ProgressService } from '../../services/ProgressService.js';
 import { renderApp } from '../../ui/renderApp.js';
 import { logger } from '../../utils/logger.js';
 
-interface OpenArgs {
+export interface OpenArgs {
   target: string;
 }
 

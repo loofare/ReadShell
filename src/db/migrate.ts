@@ -6,7 +6,7 @@
 import { getDb } from './client.js';
 import { logger } from '../utils/logger.js';
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 /**
  * 初始化数据库（建表 + 版本管理）
@@ -77,6 +77,18 @@ function migrate(db: ReturnType<typeof getDb>, fromVersion: number): void {
       -- 索引
       CREATE INDEX IF NOT EXISTS idx_chapter_book ON chapter_index(book_id);
       CREATE INDEX IF NOT EXISTS idx_recent_opened ON recent_reads(opened_at DESC);
+    `,
+    2: `
+      -- 书签管理
+      CREATE TABLE IF NOT EXISTS bookmarks (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        book_id     TEXT NOT NULL REFERENCES books(id),
+        title       TEXT NOT NULL,
+        byte_offset INTEGER NOT NULL,
+        created_at  INTEGER NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_bookmarks_book ON bookmarks(book_id);
     `,
   };
 

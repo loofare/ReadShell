@@ -7,7 +7,7 @@ import type { CommandModule } from 'yargs';
 import { BookService } from '../../services/BookService.js';
 import { logger } from '../../utils/logger.js';
 
-interface ImportArgs {
+export interface ImportArgs {
   file: string;
 }
 

@@ -52,6 +52,26 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
       setSelectedIndex((prev) => Math.min(prev + 1, books.length - 1));
     }
 
+    // 删除选中的书 (backspace 键或 d 键)
+    if (key.backspace || key.delete || input === 'd' || input === 'x') {
+      const selected = books[selectedIndex];
+      if (selected) {
+        const bookService = new BookService();
+        bookService.deleteBook(selected.id);
+        
+        // 更新列表
+        setBooks((prev) => {
+          const next = prev.filter((b) => b.id !== selected.id);
+          // 调整选中游标，防止越界
+          if (selectedIndex >= next.length) {
+            setSelectedIndex(Math.max(0, next.length - 1));
+          }
+          return next;
+        });
+      }
+      return;
+    }
+
     // Enter 打开选中的书
     if (key.return) {
       const selected = books[selectedIndex];
@@ -88,20 +108,26 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   return (
     <Box flexDirection="column" padding={1}>
       <Text bold color="cyan">📚 书架 ({books.length} 本)</Text>
-      <Text dimColor>  ↑↓/jk 选择 · Enter 打开 · q 退出</Text>
+      <Text dimColor>  ↑↓/jk 选择 · Enter 打开 · d/x 删除 · q 退出</Text>
       <Box flexDirection="column" marginTop={1}>
-        {books.map((book, index) => (
-          <Box key={book.id} paddingX={1}>
-            <Text
-              color={index === selectedIndex ? 'cyan' : undefined}
-              bold={index === selectedIndex}
-            >
-              {index === selectedIndex ? '▸ ' : '  '}
-              {book.title}
-            </Text>
-            <Text dimColor>  ({book.format})</Text>
-          </Box>
-        ))}
+        {books.map((book, index) => {
+          const isSelected = index === selectedIndex;
+          
+          return (
+            <Box key={book.id} paddingX={1} justifyContent="space-between">
+              <Box>
+                <Text
+                  color={isSelected ? 'cyan' : undefined}
+                  bold={isSelected}
+                >
+                  {isSelected ? '▸ ' : '  '}
+                  {book.title}
+                </Text>
+                <Text dimColor>  ({book.format})</Text>
+              </Box>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

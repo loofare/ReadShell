@@ -8,7 +8,7 @@ import { renderApp } from '../../ui/renderApp.js';
 import { BookService } from '../../services/BookService.js';
 import { logger } from '../../utils/logger.js';
 
-interface LibraryArgs {
+export interface LibraryArgs {
   search?: string;
 }
 

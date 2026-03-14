@@ -8,30 +8,41 @@ import { Box, Text } from 'ink';
 
 interface StatusBarProps {
   bookTitle: string;
-  percent: number;
   chapterTitle?: string;
-  currentPage?: number;
-  totalPages?: number;
+  percent: number;
+  currentPage: number;
+  totalPages: number;
+  remainingTime?: string;
 }
 
-export function StatusBar({ bookTitle, percent, chapterTitle, currentPage, totalPages }: StatusBarProps) {
-  const percentStr = `${(percent * 100).toFixed(1)}%`;
-  const pageStr = currentPage && totalPages ? `${currentPage}/${totalPages}` : '';
+export function StatusBar({
+  bookTitle,
+  chapterTitle,
+  percent,
+  currentPage,
+  totalPages,
+  remainingTime,
+}: StatusBarProps) {
+  const displayPercent = (percent * 100).toFixed(1);
+  const titleDisplay = chapterTitle ? `${bookTitle} · ${chapterTitle}` : bookTitle;
 
   return (
-    <Box paddingX={1} justifyContent="space-between">
+    <Box flexDirection="row" justifyContent="space-between" borderStyle="single" borderTop={false} borderLeft={false} borderRight={false} paddingX={1}>
       <Box>
-        <Text color="gray" dimColor>
-          📖 {bookTitle}
-        </Text>
-        {chapterTitle && (
-          <Text color="gray" dimColor> · {chapterTitle}</Text>
-        )}
+        <Text color="gray">📖 {titleDisplay}</Text>
       </Box>
+
       <Box>
-        {pageStr && <Text color="gray" dimColor>{pageStr}  </Text>}
-        <Text color="cyan" bold>{percentStr}</Text>
-        <Text color="gray" dimColor>  q退出</Text>
+        {remainingTime && (
+          <Text dimColor>预计剩余 {remainingTime}  </Text>
+        )}
+        <Text color="gray">
+          {currentPage}/{totalPages}  
+        </Text>
+        <Text color="gray">
+          {displayPercent}%  
+        </Text>
+        <Text dimColor>q退出</Text>
       </Box>
     </Box>
   );
