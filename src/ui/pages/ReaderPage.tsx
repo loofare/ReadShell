@@ -142,7 +142,8 @@ function ReaderContent({
       onChapterList: () => setShowChapterNav(true),
       onBossKey: () => {
         saveReadingProgress(); // 老板来了！先存盘
-        triggerBossKey();      // 再跑路
+        triggerBossKey();      // 设置老板键激活状态
+        exit();                // 告诉 Ink 退出，renderApp 会接手后续伪装动作
       },
       onBookmarkAdd: handleAddBookmark,
     },

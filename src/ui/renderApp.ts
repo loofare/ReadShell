@@ -6,6 +6,7 @@
 import React from 'react';
 import { render } from 'ink';
 import { App, type PageRoute } from './App.js';
+import { isBossKeyActive, performBossKeyAction } from '../utils/bossKey.js';
 
 interface RenderOptions {
   initialPage?: PageRoute;
@@ -27,8 +28,16 @@ export function renderApp(options: RenderOptions = {}): void {
     }),
   );
 
-  waitUntilExit().catch(() => {
-    // Ink 退出时的清理
-    process.exit(0);
-  });
+  waitUntilExit()
+    .then(() => {
+      // 检查是否是因为老板键退出
+      if (isBossKeyActive()) {
+        performBossKeyAction();
+      }
+      process.exit(0);
+    })
+    .catch(() => {
+      // 异常退出清理
+      process.exit(1);
+    });
 }
