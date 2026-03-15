@@ -13,6 +13,18 @@ import { removeCommand } from './commands/remove.js';
 import { langCommand } from './commands/lang.js';
 import { updateCommand } from './commands/update.js';
 
+import * as fs from 'node:fs';
+
+const getVersion = () => {
+  try {
+    const pkgUrl = new URL('../../package.json', import.meta.url);
+    const pkg = JSON.parse(fs.readFileSync(pkgUrl, 'utf-8'));
+    return pkg.version;
+  } catch {
+    return 'unknown';
+  }
+};
+
 export function createParser() {
   return yargs(hideBin(process.argv))
     .scriptName('novel')
@@ -28,6 +40,6 @@ export function createParser() {
     .strict()
     .alias('h', 'help')
     .alias('v', 'version')
-    .version('0.1.0')
+    .version(getVersion())
     .epilogue('ReadShell — 终端内低打断轻阅读工具');
 }
