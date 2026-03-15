@@ -4,7 +4,11 @@
  */
 
 export function triggerBossKey(): void {
-  // 1. 清空屏幕
+  // 1. 彻底清空当前屏幕并清除滚动回放缓冲区 (Scrollback Buffer)
+  // \u001b[3J: 清除滚动条历史
+  // \u001b[2J: 清除当前可视区域
+  // \u001b[1;1H: 移动光标到左上角
+  process.stdout.write('\u001b[3J\u001b[2J\u001b[1;1H');
   console.clear();
 
   // 2. 打印极度逼真的伪装日志（终端报错风格）
