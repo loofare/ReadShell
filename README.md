@@ -1,143 +1,140 @@
 [English](README.md) | [中文](README_zh.md)
 
+<div align="center">
+
 # ReadShell
 
-> CLI Light Reading Tool for Developers
+**Your terminal already has everything. Now it has a bookshelf.**
 
+[![npm version](https://img.shields.io/npm/v/readshell.svg)](https://www.npmjs.com/package/readshell)
+[![npm downloads](https://img.shields.io/npm/dm/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org)
 
+*A low-friction reading tool for developers who never leave the terminal.*
+
+![ReadShell Demo](./docs/demo.gif)
+
+</div>
+
 ---
 
-## 🎯 Why ReadShell?
+## The Problem
 
-ReadShell is not designed for "when you have no screens to read on", but rather:
+Waiting for a build to finish? Pipeline still running? You have 5 minutes.
 
-**During coding breaks, you need a quick reading escape that won't drag you out of your workflow.**
+You open your phone. 40 minutes later, you're still scrolling.
 
-| Alternatives | The Problem |
-|---|---|
-| Scrolling Social Media | Hard to stop; 10 minutes turns into 40 minutes. |
-| Web Browsing | Information overload hijacked by algorithms; hard to get back to work. |
-| Desktop Apps / Kindle | Requires switching context, devices, or windows, breaking your flow. |
-| **ReadShell** | **Rest where you are, recover your flow, never leave the terminal.** |
+ReadShell is built for that gap — a reading space that lives inside your workflow, not outside it.
+```bash
+novel resume
+```
 
-## 📈 Current MVP Progress (v0.1.0)
+One command. Back to where you were. Back to work when you're ready.
 
-Our initial MVP goals are fully realized:
-- **Core Format Support**: Native parsing for `.txt` plain text and `.epub` ebooks. Features intelligent pagination, dialogue highlighting, and smooth scrolling.
-- **Immersion & Boss Key**: Original `Boss Key` (`b`/`Esc`) instantly disguises the reader as a standard terminal error log, saving your progress seamlessly.
-- **Local Lightning-Fast Library**: A zero-dependency local data center built entirely on SQLite. Accurately remembers byte-offsets and silently saves your progress upon exiting.
-- **Deep Flow Reading**: Features rapid bookmarks (`m` key) and localized Kindle-style "Time Left" estimations based on your reading speed.
-- **Batch Folder Import**: Recursively scan and import entire folders of books at once.
-- **I18n Support**: Native support for English and Chinese.
+---
 
-## 💡 The Philosophy (Developer's Monologue)
+## Features
 
-### Why build a reader in the terminal?
-As developers, the IDE and Terminal are our natural habitats. When we are waiting for a build, a pipeline to finish, or just experiencing a 5-10 minute mental block, we need a "spiritual refuge" that is easy to slip into and easy to drop out of.
+**📖 `novel resume` — Zero-friction re-entry**
+The most important command. Picks up exactly where you left off, down to the byte.
 
-Web browsers easily hijack your attention, and phones completely shatter your flow state. But the terminal—a pure, text-only monochrome environment—naturally carries a restrained sense of isolation.
+**🥷 Boss Key (`b` / `Esc`) — Instant disguise**
+One keypress transforms the reader into a convincing terminal error log. Your secret is safe.
 
-**ReadShell** attempts to provide a text-based sanctuary with the lowest friction possible within this highly restrained environment. No bloated UI, no distractions. To your coworkers, it just looks like another local build task running silently and efficiently.
+**⏱ Reading time estimate**
+Calibrated to your actual reading speed. Tells you if you have time for one more chapter.
 
-### The Romance of Tech Choices
-To achieve ultimate speed and minimal resource overhead, we abandoned Electron and GUI frameworks:
-- **`Ink` TUI Aesthetics**: Drawing an old-school, geeky CLI using Modern React reactive principles. Flexbox and Hooks give CLI apps smooth boundary feedback.
-- **Absolute Local Sovereignty (`SQLite`)**: Rejecting cloud lock-in and redundant network requests. Your reading memories, chapter skeletons, and bookmarks exist cleanly in a lightning-fast read-only ledger on your SSD.
-- **Philosophy of Simplification**: Whether it’s a massive raw TXT or a complex HTML-embedded EPUB, they are streamed, parsed, and cleansed into structured terminal rows, arriving right before your eyes at the press of a key.
+**🔖 Bookmarks (`m`)**
+Capture a passage mid-read. Revisit it later from the chapter navigator (`c`).
 
-## ⚡ Quick Start
+**📚 Batch import**
+`novel import ~/books/` — recursively imports an entire folder of `.txt` and `.epub` files.
 
-### Installation
+**🌐 i18n**
+Native English and Chinese support.
 
+---
+
+## Quick Start
 ```bash
 npm install -g readshell
 ```
-
-### Basic Usage
-
 ```bash
-# Set Language (en / zh)
-novel lang en
-
-# Import a single book or batch import a folder (.txt and .epub)
+# Import your books
 novel import ~/books/
 
-# Resume last read (Zero-friction entry)
+# Jump back in
 novel resume
 
-# Open a specific book
+# Or pick a specific book
 novel open <book-id>
 
-# Configure application (language | line-spacing | reading-mode)
-novel config language en
-novel config line-spacing 1
-novel config reading-mode scroll
-
-# View book list
+# Browse your library
 novel list
-
-# Remove a book and its records
-novel remove <book-id>
-
-# Check and update to the latest version
-novel update
 ```
 
-### Reader Shortcuts
+### Reader Controls
 
-| `Space` / `j` / `↓` | Next Page (or Scroll half-page in scroll mode) |
-| `k` / `↑` | Previous Page (or Scroll half-page in scroll mode) |
-| `c` | **Open Chapters and Bookmarks list (Quick Navigation)** |
-| `Tab` | Switch between Chapters/Bookmarks in menu |
-| `m` / `M` | Add Bookmark at the current page |
-| `b` / `Esc` | Boss Key (instantly disguise terminal and save) |
-| `q` | Quit and save progress |
+| Key | Action |
+|---|---|
+| `Space` / `j` / `↓` | Next page / scroll down |
+| `k` / `↑` | Previous page / scroll up |
+| `c` | Chapter list & bookmarks |
+| `Tab` | Toggle chapters / bookmarks |
+| `m` | Add bookmark |
+| `b` / `Esc` | **Boss Key** — disguise & save |
+| `q` | Quit & save |
 | `?` | Help |
 
-## 🏗️ Tech Stack
+### Configuration
+```bash
+novel lang en                       # Set language (en / zh)
+novel config line-spacing 1         # Line spacing
+novel config reading-mode scroll    # scroll or page
+novel update                        # Update to latest
+```
 
-- **TypeScript** + **Node.js** (≥ 18)
-- **Ink** — React-based Terminal UI framework
-- **SQLite** (`better-sqlite3`) — Zero-dependency local DB
-- **Vitest** — Testing Framework
+---
 
-## 📁 Project Structure
+## Why the terminal?
 
+The terminal is already where you live. It's focused, text-only, and distraction-resistant by nature.
+
+ReadShell doesn't ask you to context-switch. It sits quietly in your workflow — invisible to colleagues, zero install friction, no accounts, no cloud, no noise.
+
+Your reading history lives entirely on your local machine in a SQLite file. Nothing leaves your disk.
+
+---
+
+## Tech Stack
+
+- **TypeScript** + **Node.js** ≥ 18
+- **Ink** — React-based TUI framework
+- **SQLite** (`better-sqlite3`) — local-first, zero-dependency storage
+- **Vitest** — testing
+
+## Project Structure
 ```
 src/
-├── cli/          # CLI layer: args parsing, command dispatch
-├── ui/           # TUI layer (Ink components)
-├── services/     # Business logic
-├── parsers/      # Format parsers (txt/epub)
-├── db/           # Database layer (SQLite)
-├── config/       # Configuration management
-└── utils/        # Utilities
+├── cli/        # Command layer
+├── ui/         # TUI components (Ink)
+├── services/   # Business logic
+├── parsers/    # txt / epub parsers
+├── db/         # SQLite layer
+├── config/     # Config management
+└── utils/
 ```
 
-## 🛠️ Development
+---
 
-```bash
-# Install dependencies
-npm install
+## Contributing
 
-# Dev mode
-npm run dev
+Issues, ideas, and PRs are welcome.
+If ReadShell fits into your workflow, a ⭐ helps more people find it.
 
-# Run tests
-npm test
+---
 
-# Build
-npm run build
-
-# Lint
-npm run lint
-
-# Format
-npm run format
-```
-
-## 📝 License
+## License
 
 [AGPL-3.0](LICENSE)

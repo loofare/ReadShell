@@ -1,140 +1,141 @@
 [English](README.md) | [中文](README_zh.md)
 
-# ReadShell
-> 终端内低打断轻阅读工具 · CLI Light Reading Tool for Developers
+<div align="center">
 
+# ReadShell
+
+**终端里已经有了一切。现在它有了一个书架。**
+
+[![npm version](https://img.shields.io/npm/v/readshell.svg)](https://www.npmjs.com/package/readshell)
+[![npm downloads](https://img.shields.io/npm/dm/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org)
 
+*为不离开终端的开发者设计的低打断轻阅读工具*
+
+![ReadShell Demo](./docs/demo.gif)
+
+</div>
+
 ---
 
-## 🎯 解决什么问题
+## 问题是这样的
 
-ReadShell 解决的不是「没有地方看书」，而是：
+等编译、等部署、等 CI 跑完——你有 5 分钟。
 
-**开发间隙，你缺少一个不会把自己拖离工作流的短时休息入口。**
+你拿起手机。40 分钟后，你还在刷。
 
-| 现有替代方案 | 问题 |
-|---|---|
-| 刷手机 | 打开就停不下来，10 分钟变 40 分钟 |
-| 刷网页 | 信息流劫持注意力，回不到工作状态 |
-| 微信读书 / Kindle | 需要切换设备或窗口，打断工作流 |
-| **ReadShell** | **原地休息，原地恢复，不离开终端** |
+ReadShell 就是为这段空隙设计的——一个活在工作流里、而不是工作流之外的阅读入口。
+```bash
+novel resume
+```
 
-## 📈 当前阶段进度 (v0.1.0 MVP 达成)
+一条命令，回到上次读到的地方。准备好了，关掉，继续写代码。
 
-目前项目已完全兑现最初的《产品手册》设计目标（阶段一至阶段三皆已闭环上线）：
-- **核心阅读全格式支持**：原生支持 `.txt` 纯文本与 `.epub` 电子书解析。支持智能分页渲染、对话高亮以及平滑滚动。
-- **沉浸与反侦查系统**：独创的 `Boss Key` (老板键 `b`/`Esc`)，一键秒速伪装成标准的终端报错日志，深藏功与名。
-- **本地极速书房**：基于 SQLite 构建的零依赖本地数据中心。能够精准记忆任何一本书的字节读取偏移量，并在你退出时默默保存进度。
-- **深度时间流体验**：新增随时截取金句的快捷书签（`m` 键）以及基于你的本地 Buffer 实时演算的类 Kindle 阅读剩余时间预估。
+---
 
-## 💡 为什么是这样？(内心独白)
+## 功能
 
-### 产品的本心：为什么要在终端里做阅读器？
-作为一个开发者，IDE 和 Terminal 是我们日常最常驻的舒适区。当我们在编译等待、等待流水线构建或者单纯思维枯竭的 5 到 10 分钟里，常常需要一个能够**迅速切入又迅速抽离**的“精神避难所”。
-刷网页容易被算法劫持，看手机更是会彻底打断心流进程。而终端——这个只有黑底白字、极度纯粹的环境，天生就带有一种克制的隔离感。
-**ReadShell** 试图在这个极度克制的环境里，以最低的启动摩擦力给你提供一处可以随时下潜和浮出的文字世界。它不需要全屏的臃肿软件，不需要花哨的 UI，在你同事的眼里，它就像一个正在执行的本地构建任务，静默而高效。
+**📖 `novel resume` — 零摩擦续读**
+最重要的命令。精确到字节地恢复你上次的阅读位置。
 
-### 技术选型的浪漫
-在技术栈的设计上，为了追求极致的启动响应和最低的资源开销，我们抛弃了臃肿的 Electron 和图形界面：
-- **`Ink` 驱动的 TUI 美学**：用现代化的 React 响应式思维去描绘古老而极客的命令行界面。Flexbox 布局与 Hooks 状态机让控制台程序也能拥有细腻顺滑的反馈边界。
-- **本地绝对主权 (`SQLite`)**：拒绝云端绑架与冗余的网络请求。你所有的阅读记忆、章节骨架和金句书签，都以毫秒级的查询效率安静地存在于你硬盘上的只读账本里。它是彻底私密、极速的数据中枢。
-- **化繁为简的解析哲学**：无论是动辄几十兆的粗糙 TXT，还是内嵌错综复杂 HTML 的精品 EPUB 包，在经过流式切割和文本清洗后，最终都会化为终端里规整的行与列，在每个敲击的顺手瞬间抵达你的屏前。
+**🥷 老板键 (`b` / `Esc`) — 一键伪装**
+按下去，阅读器瞬间变成一段看起来正在运行的终端日志。同事路过，稳如泰山。
 
-## ⚡ 快速开始
+**⏱ 阅读剩余时间**
+基于你实际阅读速度实时演算。让你知道这段空隙够不够看完下一章。
 
-### 安装
+**🔖 书签 (`m`)**
+随手标记当前页面。之后在章节导航器（`c`）里随时找回。
 
+**📚 批量导入**
+`novel import ~/books/` — 递归扫描整个文件夹，`.txt` 和 `.epub` 一次全进。
+
+**🌐 中英双语**
+原生支持中文和英文界面。
+
+---
+
+## 快速开始
 ```bash
 npm install -g readshell
 ```
-
-### 基本使用
-
 ```bash
-# 设置语言 (支持 zh / en)
-novel lang zh
-
-# 导入一本书或批量导入整个文件夹 (支持 .txt 和 .epub)
+# 导入书籍
 novel import ~/books/
 
-# 恢复上次阅读（零摩擦入口）
+# 回到上次读的地方
 novel resume
 
-# 打开指定书籍
+# 或者指定打开某本书
 novel open <book-id>
 
-# 修改配置项 (language | line-spacing | reading-mode)
-novel config language zh
-novel config line-spacing 1
-novel config reading-mode scroll
-
-# 查看书架书籍列表
+# 查看书架
 novel list
-
-# 移除书籍与记录
-novel remove <book-id>
-
-# 检查并更新到最新版本
-novel update
 ```
 
 ### 阅读器快捷键
 
 | 快捷键 | 功能 |
 |---|---|
-| `空格` / `j` / `↓` | 下一页 (在滚动模式下为向下平滑滚动半屏) |
-| `k` / `↑` | 上一页 (在滚动模式下为向上平滑滚动半屏) |
-| `c` | **重点功能：章节列表及书签列表 (快速导航)** |
-| `Tab` | 章节弹出层中切换【目录/书签】 |
-| `m` / `M` | 将当前页首行标记为书签 |
-| `b` / `Esc` | Boss Key (老板键)，秒速伪装终端报错并自动存档 |
-| `q` | 正常退出并保存进度 |
+| `空格` / `j` / `↓` | 下一页 / 向下滚动 |
+| `k` / `↑` | 上一页 / 向上滚动 |
+| `c` | 章节列表与书签 |
+| `Tab` | 切换目录 / 书签 |
+| `m` | 添加书签 |
+| `b` / `Esc` | **老板键** — 伪装并存档 |
+| `q` | 退出并保存 |
 | `?` | 帮助 |
 
-## 🏗️ 技术栈
+### 配置
+```bash
+novel lang zh                       # 切换语言 (zh / en)
+novel config line-spacing 1         # 行间距
+novel config reading-mode scroll    # 阅读模式：scroll / page
+novel update                        # 更新到最新版本
+```
 
-- **TypeScript** + **Node.js** (≥ 18)
+---
+
+## 为什么在终端里做阅读器？
+
+终端已经是你的主场。它专注、纯粹、天然屏蔽干扰。
+
+ReadShell 不要求你切换上下文。它安静地待在你的工作流里——对同事不可见，无需账号，无需网络，没有推送，没有算法，没有人知道你在这里。
+
+你的所有阅读记录都以 SQLite 文件的形式存在本地硬盘上，从不上传，完全属于你。
+
+---
+
+## 技术栈
+
+- **TypeScript** + **Node.js** ≥ 18
 - **Ink** — React 范式的终端 UI 框架
-- **SQLite** (`better-sqlite3`) — 零依赖本地数据库
+- **SQLite** (`better-sqlite3`) — 本地优先，零依赖存储
 - **Vitest** — 测试框架
 
-## 📁 项目结构
-
+## 项目结构
 ```
 src/
-├── cli/          # 命令层：解析参数，调用 service
-├── ui/           # TUI 层（Ink 组件）
-├── services/     # 业务逻辑层
-├── parsers/      # 文件解析层（txt/epub）
-├── db/           # 数据库层（SQLite）
-├── config/       # 配置管理
-└── utils/        # 工具函数
+├── cli/        # 命令层
+├── ui/         # TUI 组件（Ink）
+├── services/   # 业务逻辑
+├── parsers/    # txt / epub 解析
+├── db/         # SQLite 层
+├── config/     # 配置管理
+└── utils/
 ```
 
-## 🛠️ 开发
+---
 
-```bash
-# 安装依赖
-npm install
+## 参与贡献
 
-# 开发模式
-npm run dev
+欢迎提 Issue、分享想法、发起 PR。
 
-# 运行测试
-npm test
+如果 ReadShell 进了你的日常工作流，点一个 ⭐ 能让更多开发者发现它。
 
-# 构建
-npm run build
+---
 
-# 代码检查
-npm run lint
-
-# 格式化
-npm run format
-```
-
-## 📝 许可证
+## 许可证
 
 [AGPL-3.0](LICENSE)
