@@ -75,6 +75,9 @@ novel library
 
 # Remove a book and its records
 novel remove <book-id>
+
+# Check and update to the latest version
+novel update
 ```
 
 ### Reader Shortcuts

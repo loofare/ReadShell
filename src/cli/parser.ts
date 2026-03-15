@@ -11,6 +11,7 @@ import { openCommand } from './commands/open.js';
 import { libraryCommand } from './commands/library.js';
 import { removeCommand } from './commands/remove.js';
 import { langCommand } from './commands/lang.js';
+import { updateCommand } from './commands/update.js';
 
 export function createParser() {
   return yargs(hideBin(process.argv))
@@ -22,6 +23,7 @@ export function createParser() {
     .command(libraryCommand)
     .command(removeCommand)
     .command(langCommand)
+    .command(updateCommand)
     .demandCommand(1, '请指定一个命令。使用 --help 查看可用命令。')
     .strict()
     .alias('h', 'help')

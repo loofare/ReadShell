@@ -42,6 +42,13 @@ export default {
   'cli.lang.success': '✓ 语言已切换为: {0}',
   'cli.lang.unsupported': '✗ 不支持的语言: {0}',
 
+  'cli.update.desc': '检查最新版本并自动更新',
+  'cli.update.checking': '正在检查更新...',
+  'cli.update.latest': '✓ 当前已是最新版本 (v{0})',
+  'cli.update.updating': '发现新版本 v{0} (当前 v{1})，正在更新...',
+  'cli.update.success': '✓ 升级成功！请重新运行 novel 命令。',
+  'cli.update.fail': '✗ 升级失败: {0}',
+
   // TUI - Library
   'tui.lib.loading': '📚 加载书架...',
   'tui.lib.empty.title': '📚 书架',

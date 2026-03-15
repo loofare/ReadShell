@@ -44,6 +44,13 @@ const en: LocaleDictionary = {
   'cli.lang.success': '✓ Language switched to: {0}',
   'cli.lang.unsupported': '✗ Unsupported language: {0}',
 
+  'cli.update.desc': 'Check for the latest version and update automatically',
+  'cli.update.checking': 'Checking for updates...',
+  'cli.update.latest': '✓ Already up to date (v{0})',
+  'cli.update.updating': 'New version v{0} found (current v{1}), updating...',
+  'cli.update.success': '✓ Successfully updated! Please restart novel command.',
+  'cli.update.fail': '✗ Update failed: {0}',
+
   // TUI - Library
   'tui.lib.loading': '📚 Loading library...',
   'tui.lib.empty.title': '📚 Library',

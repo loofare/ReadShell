@@ -70,6 +70,9 @@ novel library
 
 # 移除书籍与记录
 novel remove <book-id>
+
+# 检查并更新到最新版本
+novel update
 ```
 
 ### 阅读器快捷键
