@@ -8,6 +8,10 @@
     "novel": "bin/readshell.js",
     "readshell": "bin/readshell.js"
   },
+  "files": [
+    "dist",
+    "bin"
+  ],
   "scripts": {
     "dev": "tsup src/index.ts --watch --onSuccess 'node dist/index.js'",
     "build": "tsup",
