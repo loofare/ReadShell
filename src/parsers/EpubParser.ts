@@ -5,6 +5,8 @@
 
 import { EPub } from 'epub2';
 import { convert } from 'html-to-text';
+import { detect } from 'chardet';
+import iconv from 'iconv-lite';
 import { logger } from '../utils/logger.js';
 import type { ParsedBook, ParsedChapter } from './TxtParser.js';
 
@@ -28,7 +30,7 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
     if (!chapterRef.id) continue;
 
     try {
-      const htmlText = await getChapterText(epub, chapterRef.id);
+      const htmlText = await getChapterHtml(epub, chapterRef.id);
       
       // 使用 html-to-text 转为纯文本，保持换行，去除无关标签
       const plainText = convert(htmlText, {
@@ -93,13 +95,24 @@ function openEpub(filePath: string): Promise<EPub> {
 }
 
 /**
- * 包装获取单个章节内容为 Promise
+ * 获取单个章节的 HTML 原文并自动转码
+ * 包装为 Promise
  */
-function getChapterText(epub: EPub, chapterId: string): Promise<string> {
+function getChapterHtml(epub: any, chapterId: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    epub.getChapter(chapterId, (err, text) => {
+    // 使用 getFile 获取原始 Buffer，避免 epub2 内部 getChapterRaw 强制转 utf-8 导致的乱码
+    epub.getFile(chapterId, (err: Error | null, data: Buffer) => {
       if (err) return reject(err);
-      resolve(text);
+
+      const buffer = data;
+      // 探测编码（如 GBK, UTF-8）
+      const encoding = detect(buffer) || 'utf-8';
+      
+      const htmlText = encoding.toLowerCase() === 'utf-8'
+        ? buffer.toString('utf-8')
+        : iconv.decode(buffer, encoding);
+
+      resolve(htmlText);
     });
   });
 }
