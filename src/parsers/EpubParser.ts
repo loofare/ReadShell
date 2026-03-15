@@ -95,6 +95,29 @@ function openEpub(filePath: string): Promise<EPub> {
 }
 
 /**
+ * 从 HTML/XML 原始字节中提取编码声明
+ * 优先读取 XML 声明 (<?xml encoding="GBK">) 和 meta charset
+ */
+function detectHtmlEncoding(buffer: Buffer): string {
+  // 用 latin1 无损读取前 1KB，仅为提取编码声明
+  const head = buffer.slice(0, 1024).toString('latin1');
+
+  // 1. 优先查找 XML 声明：<?xml version="1.0" encoding="GBK"?>
+  const xmlDecl = head.match(/<\?xml[^>]*encoding=["']([^"']+)["']/i);
+  if (xmlDecl?.[1]) return xmlDecl[1];
+
+  // 2. 查找 HTML meta charset：<meta charset="GBK"> 或 Content-Type: charset=GBK
+  const metaCharset = head.match(/charset=["']?([A-Za-z0-9_-]+)["']?/i);
+  if (metaCharset?.[1] && metaCharset[1].toLowerCase() !== 'utf-8') {
+    return metaCharset[1];
+  }
+
+  // 3. 回退：使用 chardet 字节模式探测
+  const chardetResult = detect(buffer);
+  return chardetResult || 'utf-8';
+}
+
+/**
  * 获取单个章节的 HTML 原文并自动转码
  * 包装为 Promise
  */
@@ -105,10 +128,9 @@ function getChapterHtml(epub: any, chapterId: string): Promise<string> {
       if (err) return reject(err);
 
       const buffer = data;
-      // 探测编码（如 GBK, UTF-8）
-      const encoding = detect(buffer) || 'utf-8';
-      
-      const htmlText = encoding.toLowerCase() === 'utf-8'
+      const encoding = detectHtmlEncoding(buffer);
+
+      const htmlText = encoding.toLowerCase().replace('-', '') === 'utf8' || encoding.toLowerCase() === 'utf-8'
         ? buffer.toString('utf-8')
         : iconv.decode(buffer, encoding);
 
@@ -116,4 +138,3 @@ function getChapterHtml(epub: any, chapterId: string): Promise<string> {
     });
   });
 }
-

@@ -18,8 +18,8 @@ import { ChapterNav } from '../components/ChapterNav.js';
 import { useReader } from '../hooks/useReader.js';
 import { useKeyboard } from '../hooks/useKeyboard.js';
 import { paginate, type Page } from '../../utils/paginate.js';
-import { readFileWithEncoding } from '../../utils/encoding.js';
 import { BookModel, type BookRecord } from '../../db/models/Book.js';
+import { parseFile, type ParsedBook } from '../../parsers/index.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { ChapterService } from '../../services/ChapterService.js';
 import { RecentService } from '../../services/RecentService.js';
@@ -218,16 +218,19 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
       const recentService = new RecentService();
       recentService.recordOpen(bookId);
 
-      // 读取文件内容
-      const content = readFileWithEncoding(bookRecord.file_path);
-
-      // 分页
-      const paginatedPages = paginate(content, termWidth - 2, contentHeight);
-      setPages(paginatedPages);
-
-      logger.debug(`加载完成: ${bookRecord.title}, ${paginatedPages.length} 页`);
+      // 异步读取并解析文件内容 (支持 TXT 和 EPUB)
+      parseFile(bookRecord.file_path, bookRecord.format as 'txt' | 'epub')
+        .then((parsed: ParsedBook) => {
+          // 分页
+          const paginatedPages = paginate(parsed.content, termWidth - 2, contentHeight);
+          setPages(paginatedPages);
+          logger.debug(`加载完成: ${bookRecord.title}, ${paginatedPages.length} 页`);
+        })
+        .catch((err: Error) => {
+          setError(`内容解析失败: ${err instanceof Error ? err.message : String(err)}`);
+        });
     } catch (err) {
-      setError(`加载失败: ${err instanceof Error ? err.message : String(err)}`);
+      setError(`加载过程出错: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, [bookId, termWidth, contentHeight]);
 
