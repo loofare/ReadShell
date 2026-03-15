@@ -7,13 +7,19 @@ export function triggerBossKey(): void {
   // 1. 清空屏幕
   console.clear();
 
-  // 2. 打印极度逼真的伪装日志（例如 Vite 启动成功日志）
+  // 2. 打印极度逼真的伪装日志（终端报错风格）
   const fakeLog = `
-  VITE v5.2.8  ready in 213 ms
+file:///Users/yindawei/project/node_modules/vite/dist/node/chunks/dep-BbV93i69.js:43916
+      throw new Error(\`[vite] Failed to resolve module import "./App.vue". Check if the file exists.\`);
+            ^
 
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-  ➜  press h + enter to show help
+Error: [vite] Failed to resolve module import "./App.vue". Check if the file exists.
+    at Object.run (file:///Users/yindawei/project/node_modules/vite/dist/node/chunks/dep-BbV93i69.js:43916:13)
+    at async file:///Users/yindawei/project/node_modules/vite/dist/node/cli.js:722:7
+    at async startVite (file:///Users/yindawei/project/node_modules/vite/dist/node/cli.js:700:5)
+    at async Object.handler (file:///Users/yindawei/project/node_modules/vite/dist/node/cli.js:650:1)
+
+Node.js v20.11.0
 `;
 
   console.log(fakeLog);

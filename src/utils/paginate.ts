@@ -17,11 +17,13 @@ export interface Page {
  * @param text 原始文本
  * @param width 终端宽度（列数）
  * @param height 可用行数（扣除状态栏后）
+ * @param step 步进行数（用于平滑滚动，不传则默认为 height）
  * @returns 分页结果
  */
-export function paginate(text: string, width: number, height: number): Page[] {
+export function paginate(text: string, width: number, height: number, step?: number): Page[] {
   const pages: Page[] = [];
   const rawLines = text.split('\n');
+  const actualStep = step || height;
 
   // 将原始文本行按终端宽度折行
   const wrappedLines: { text: string; byteOffset: number }[] = [];
@@ -36,12 +38,17 @@ export function paginate(text: string, width: number, height: number): Page[] {
   }
 
   // 按高度切割为页
-  for (let i = 0; i < wrappedLines.length; i += height) {
+  for (let i = 0; i < wrappedLines.length; i += actualStep) {
     const pageLines = wrappedLines.slice(i, i + height);
+    if (pageLines.length === 0) break;
+
     pages.push({
       lines: pageLines.map((l) => l.text),
       byteOffset: pageLines[0]?.byteOffset ?? 0,
     });
+
+    // 已经处理完所有行
+    if (i + actualStep >= wrappedLines.length) break;
   }
 
   return pages;

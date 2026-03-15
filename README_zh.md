@@ -65,6 +65,11 @@ novel resume
 # 打开指定书籍
 novel open <book-id>
 
+# 修改配置项 (language | line-spacing | reading-mode)
+novel config language zh
+novel config line-spacing 1
+novel config reading-mode scroll
+
 # 查看书架书籍列表
 novel list
 
@@ -79,9 +84,9 @@ novel update
 
 | 快捷键 | 功能 |
 |---|---|
-| `空格` / `j` / `↓` | 下一页 |
-| `k` / `↑` | 上一页 |
-| `c` | 章节列表及书签列表 |
+| `空格` / `j` / `↓` | 下一页 (在滚动模式下为向下平滑滚动半屏) |
+| `k` / `↑` | 上一页 (在滚动模式下为向上平滑滚动半屏) |
+| `c` | **重点功能：章节列表及书签列表 (快速导航)** |
 | `Tab` | 章节弹出层中切换【目录/书签】 |
 | `m` / `M` | 将当前页首行标记为书签 |
 | `b` / `Esc` | Boss Key (老板键)，秒速伪装终端报错并自动存档 |

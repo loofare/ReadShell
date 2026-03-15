@@ -39,10 +39,13 @@ const en: LocaleDictionary = {
   'cli.remove.success': '✓ Book removed:',
   'cli.remove.fail': 'Failed to remove book:',
 
-  'cli.lang.desc': 'Switch language',
-  'cli.lang.help': 'Language code: zh | en',
   'cli.lang.success': '✓ Language switched to: {0}',
   'cli.lang.unsupported': '✗ Unsupported language: {0}',
+
+  'cli.config.desc': 'Modify application configuration',
+  'cli.config.line_spacing.desc': 'Line spacing: 0 (tight) | 1 (medium) | 2 (loose)',
+  'cli.config.line_spacing.success': '✓ Line spacing set to: {0}',
+  'cli.config.reading_mode.desc': 'Reading mode: page (paging) | scroll (scrolling)',
 
   'cli.update.desc': 'Check for the latest version and update automatically',
   'cli.update.checking': 'Checking for updates...',
@@ -67,6 +70,7 @@ const en: LocaleDictionary = {
   'tui.nav.tab.chapters': '[All Chapters]',
   'tui.nav.tab.bookmarks': '[My Bookmarks]',
   'tui.nav.tips': 'Enter jump · Tab switch · Esc/q close',
+  'tui.nav.hint': 'Press C to open this list, press Tab to switch to bookmarks',
   'tui.nav.empty': 'No records',
   'tui.nav.page': 'Page {0} / {1}',
 };

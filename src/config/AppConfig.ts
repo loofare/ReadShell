@@ -14,6 +14,8 @@ interface ReadShellConfig {
   readingMode: 'page' | 'scroll';
   /** 界面语言 */
   language: 'zh' | 'en';
+  /** 行间距 (0-2) */
+  lineSpacing: number;
 }
 
 const defaults: ReadShellConfig = {
@@ -21,6 +23,7 @@ const defaults: ReadShellConfig = {
   showStatusBar: true,
   readingMode: 'page',
   language: 'zh',
+  lineSpacing: 0,
 };
 
 const config = new Conf<ReadShellConfig>({
@@ -34,6 +37,7 @@ export function getConfig(): ReadShellConfig {
     showStatusBar: config.get('showStatusBar'),
     readingMode: config.get('readingMode'),
     language: config.get('language'),
+    lineSpacing: config.get('lineSpacing'),
   };
 }
 

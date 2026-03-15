@@ -9,6 +9,7 @@ import { libraryCommand } from './library.js';
 import { removeCommand } from './remove.js';
 import { langCommand } from './lang.js';
 import { updateCommand } from './update.js';
+import { configCommand } from './config.js';
 
-export { importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand, updateCommand };
-export const commands = [importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand, updateCommand];
+export { importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand, updateCommand, configCommand };
+export const commands = [importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand, updateCommand, configCommand];

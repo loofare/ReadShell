@@ -9,6 +9,7 @@ import { Box, Text } from 'ink';
 interface TextRendererProps {
   lines: string[];
   height?: number;
+  lineSpacing?: number;
 }
 
 /**
@@ -49,7 +50,7 @@ function renderLineWithHighlight(line: string) {
   );
 }
 
-export function TextRenderer({ lines, height }: TextRendererProps) {
+export function TextRenderer({ lines, height, lineSpacing = 0 }: TextRendererProps) {
   // 补齐空行以占满屏幕高度（避免内容跳动）
   const displayLines = [...lines];
   if (height && displayLines.length < height) {
@@ -62,7 +63,7 @@ export function TextRenderer({ lines, height }: TextRendererProps) {
   return (
     <Box flexDirection="column">
       {displayLines.map((line, index) => (
-        <Box key={index}>
+        <Box key={index} marginBottom={lineSpacing}>
           {renderLineWithHighlight(line)}
         </Box>
       ))}

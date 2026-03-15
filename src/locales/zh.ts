@@ -37,10 +37,13 @@ export default {
   'cli.remove.success': '✓ 已移除书籍:',
   'cli.remove.fail': '移除书籍失败:',
 
-  'cli.lang.desc': '切换语言',
-  'cli.lang.help': '语言代码: zh | en',
   'cli.lang.success': '✓ 语言已切换为: {0}',
   'cli.lang.unsupported': '✗ 不支持的语言: {0}',
+
+  'cli.config.desc': '修改应用配置',
+  'cli.config.line_spacing.desc': '行间距: 0 (紧凑) | 1 (适中) | 2 (宽松)',
+  'cli.config.line_spacing.success': '✓ 行间距已设置为: {0}',
+  'cli.config.reading_mode.desc': '阅读模式: page (翻页) | scroll (滚动)',
 
   'cli.update.desc': '检查最新版本并自动更新',
   'cli.update.checking': '正在检查更新...',
@@ -61,10 +64,10 @@ export default {
   'tui.reader.bookmark_add': '✓ 增加书签: {0}',
   'tui.reader.status.remaining': '预计剩余 {0}',
 
-  // TUI - ChapterNav
   'tui.nav.tab.chapters': '[全部章节]',
   'tui.nav.tab.bookmarks': '[我的书签]',
   'tui.nav.tips': 'Enter 跳转 · Tab 切换 · Esc/q 关闭',
+  'tui.nav.hint': '按 C 键弹出此清单，按 Tab 切换书签',
   'tui.nav.empty': '没有记录',
   'tui.nav.page': '第 {0} / {1} 页',
 };

@@ -70,6 +70,11 @@ novel resume
 # Open a specific book
 novel open <book-id>
 
+# Configure application (language | line-spacing | reading-mode)
+novel config language en
+novel config line-spacing 1
+novel config reading-mode scroll
+
 # View book list
 novel list
 
@@ -82,14 +87,12 @@ novel update
 
 ### Reader Shortcuts
 
-| Key | Action |
-|---|---|
-| `Space` / `j` / `↓` | Next Page |
-| `k` / `↑` | Previous Page |
-| `c` | Open Chapters and Bookmarks list |
+| `Space` / `j` / `↓` | Next Page (or Scroll half-page in scroll mode) |
+| `k` / `↑` | Previous Page (or Scroll half-page in scroll mode) |
+| `c` | **Open Chapters and Bookmarks list (Quick Navigation)** |
 | `Tab` | Switch between Chapters/Bookmarks in menu |
 | `m` / `M` | Add Bookmark at the current page |
-| `b` / `Esc` | Boss Key (disguise terminal as error and save) |
+| `b` / `Esc` | Boss Key (instantly disguise terminal and save) |
 | `q` | Quit and save progress |
 | `?` | Help |
 

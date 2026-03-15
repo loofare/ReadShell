@@ -30,6 +30,7 @@ import { triggerBossKey } from '../../utils/bossKey.js';
 import { estimateReadingTime, formatReadingTime } from '../../utils/time.js';
 import { logger } from '../../utils/logger.js';
 import { t } from '../../locales/index.js';
+import { getConfig } from '../../config/AppConfig.js';
 
 interface ReaderPageProps {
   bookId: string;
@@ -47,6 +48,7 @@ function ReaderContent({
   initialByteOffset,
   termHeight,
   contentHeight,
+  lineSpacing,
 }: {
   book: BookRecord;
   bookId: string;
@@ -54,6 +56,7 @@ function ReaderContent({
   initialByteOffset?: number;
   termHeight: number;
   contentHeight: number;
+  lineSpacing: number;
 }) {
   const { exit } = useApp();
   const [chapterTitle, setChapterTitle] = useState<string | undefined>();
@@ -68,6 +71,17 @@ function ReaderContent({
   const bookmarkServiceRef = useRef(new BookmarkService());
 
   const reader = useReader(pages, initialByteOffset);
+
+  // 保存进度的通用方法
+  const saveReadingProgress = () => {
+    const offset = reader.getCurrentOffset();
+    const percent = reader.getPercent();
+    const chapter = chapterServiceRef.current.getChapterByOffset(bookId, offset);
+    const chapterNo = chapter?.chapter_no ?? 0;
+
+    progressServiceRef.current.saveProgress(bookId, chapterNo, offset, percent);
+    logger.debug(`进度已保存: offset=${offset}, ${(percent * 100).toFixed(1)}%`);
+  };
 
   // 加载并更新当前章节信息
   useEffect(() => {
@@ -115,13 +129,7 @@ function ReaderContent({
    */
   useEffect(() => {
     return () => {
-      const offset = reader.getCurrentOffset();
-      const percent = reader.getPercent();
-      const chapter = chapterServiceRef.current.getChapterByOffset(bookId, offset);
-      const chapterNo = chapter?.chapter_no ?? 0;
-
-      progressServiceRef.current.saveProgress(bookId, chapterNo, offset, percent);
-      logger.debug(`进度已保存: offset=${offset}, ${(percent * 100).toFixed(1)}%`);
+      saveReadingProgress();
     };
   }, [bookId, reader]);
 
@@ -132,7 +140,10 @@ function ReaderContent({
       onPrev: () => reader.prevPage(),
       onQuit: () => exit(),
       onChapterList: () => setShowChapterNav(true),
-      onBossKey: () => triggerBossKey(),
+      onBossKey: () => {
+        saveReadingProgress(); // 老板来了！先存盘
+        triggerBossKey();      // 再跑路
+      },
       onBookmarkAdd: handleAddBookmark,
     },
     !showChapterNav, // 如果浮层显示，则停止普通的阅读快捷键
@@ -156,7 +167,7 @@ function ReaderContent({
       {!showChapterNav ? (
         <>
           <Box flexDirection="column" flexGrow={1} paddingX={1}>
-            <TextRenderer lines={currentLines} height={calculatedContentHeight} />
+            <TextRenderer lines={currentLines} height={calculatedContentHeight} lineSpacing={lineSpacing} />
           </Box>
           <StatusBar
             bookTitle={book.title}
@@ -199,7 +210,12 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
 
   const termWidth = stdout?.columns ?? 80;
   const termHeight = stdout?.rows ?? 24;
-  const contentHeight = Math.max(termHeight - 3, 5);
+
+  const appConfig = getConfig();
+  const lineSpacing = appConfig.lineSpacing || 0;
+  
+  // 核心优化：如果行间距 > 0，则物理行数会翻倍。为了保证不超出屏幕，分页时的内容高度需要对应缩小。
+  const contentHeight = Math.max(Math.floor((termHeight - 3) / (1 + lineSpacing)), 2);
 
   // 加载书籍内容
   useEffect(() => {
@@ -221,10 +237,15 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
       // 异步读取并解析文件内容 (支持 TXT 和 EPUB)
       parseFile(bookRecord.file_path, bookRecord.format as 'txt' | 'epub')
         .then((parsed: ParsedBook) => {
+          // 核心优化：如果处于滚动模式，步进减半以实现平滑过渡
+          const stepSize = appConfig.readingMode === 'scroll' 
+            ? Math.max(1, Math.floor(contentHeight / 2)) 
+            : contentHeight;
+
           // 分页
-          const paginatedPages = paginate(parsed.content, termWidth - 2, contentHeight);
+          const paginatedPages = paginate(parsed.content, termWidth - 2, contentHeight, stepSize);
           setPages(paginatedPages);
-          logger.debug(`加载完成: ${bookRecord.title}, ${paginatedPages.length} 页`);
+          logger.debug(`加载完成: ${bookRecord.title}, ${paginatedPages.length} 页, 模式: ${appConfig.readingMode}`);
         })
         .catch((err: Error) => {
           setError(`内容解析失败: ${err instanceof Error ? err.message : String(err)}`);
@@ -267,6 +288,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
       initialByteOffset={initialByteOffset}
       termHeight={termHeight}
       contentHeight={contentHeight}
+      lineSpacing={lineSpacing}
     />
   );
 }
