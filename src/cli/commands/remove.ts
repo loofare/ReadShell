@@ -6,6 +6,7 @@
 import type { CommandModule } from 'yargs';
 import { BookService } from '../../services/BookService.js';
 import { logger } from '../../utils/logger.js';
+import { t } from '../../locales/index.js';
 
 export interface RemoveArgs {
   target: string;
@@ -13,10 +14,10 @@ export interface RemoveArgs {
 
 export const removeCommand: CommandModule<object, RemoveArgs> = {
   command: 'remove <target>',
-  describe: '从书架移除书籍（仅删除记录，不删源文件）',
+  describe: t('cli.remove.desc'),
   builder: (yargs) => {
     return yargs.positional('target', {
-      describe: '书籍 ID 或书名（支持模糊匹配）',
+      describe: t('cli.remove.help'),
       type: 'string',
       demandOption: true,
     });
@@ -27,12 +28,12 @@ export const removeCommand: CommandModule<object, RemoveArgs> = {
       const book = bookService.findBook(argv.target);
 
       if (!book) {
-        console.log(`✗ 未找到匹配书籍: ${argv.target}`);
+        console.log(`${t('cli.remove.not_found')} ${argv.target}`);
         process.exit(1);
       }
 
       bookService.deleteBook(book.id);
-      console.log(`✓ 已移除书籍: ${book.title}`);
+      console.log(`${t('cli.remove.success')} ${book.title}`);
     } catch (error) {
       logger.error('移除书籍失败:', error);
       process.exit(1);

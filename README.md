@@ -1,128 +1,137 @@
+[English](README.md) | [中文](README_zh.md)
+
 # ReadShell
 
-> 终端内低打断轻阅读工具 · CLI Light Reading Tool for Developers
+> CLI Light Reading Tool for Developers
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org)
 
 ---
 
-## 🎯 解决什么问题
+## 🎯 Why ReadShell?
 
-ReadShell 解决的不是「没有地方看书」，而是：
+ReadShell is not designed for "when you have no screens to read on", but rather:
 
-**开发间隙，你缺少一个不会把自己拖离工作流的短时休息入口。**
+**During coding breaks, you need a quick reading escape that won't drag you out of your workflow.**
 
-| 现有替代方案 | 问题 |
+| Alternatives | The Problem |
 |---|---|
-| 刷手机 | 打开就停不下来，10 分钟变 40 分钟 |
-| 刷网页 | 信息流劫持注意力，回不到工作状态 |
-| 微信读书 / Kindle | 需要切换设备或窗口，打断工作流 |
-| **ReadShell** | **原地休息，原地恢复，不离开终端** |
+| Scrolling Social Media | Hard to stop; 10 minutes turns into 40 minutes. |
+| Web Browsing | Information overload hijacked by algorithms; hard to get back to work. |
+| Desktop Apps / Kindle | Requires switching context, devices, or windows, breaking your flow. |
+| **ReadShell** | **Rest where you are, recover your flow, never leave the terminal.** |
 
-## 📈 当前阶段进度 (v0.1.0 MVP 达成)
+## 📈 Current MVP Progress (v0.1.0)
 
-目前项目已完全兑现最初的《产品手册》设计目标（阶段一至阶段三皆已闭环上线）：
-- **核心阅读全格式支持**：原生支持 `.txt` 纯文本与 `.epub` 电子书解析。支持智能分页渲染、对话高亮以及平滑滚动。
-- **沉浸与反侦查系统**：独创的 `Boss Key` (老板键 `b`/`Esc`)，一键秒速伪装成标准的终端报错日志，深藏功与名。
-- **本地极速书房**：基于 SQLite 构建的零依赖本地数据中心。能够精准记忆任何一本书的字节读取偏移量，并在你退出时默默保存进度。
-- **深度时间流体验**：新增随时截取金句的快捷书签（`m` 键）以及基于你的本地 Buffer 实时演算的类 Kindle 阅读剩余时间预估。
+Our initial MVP goals are fully realized:
+- **Core Format Support**: Native parsing for `.txt` plain text and `.epub` ebooks. Features intelligent pagination, dialogue highlighting, and smooth scrolling.
+- **Immersion & Boss Key**: Original `Boss Key` (`b`/`Esc`) instantly disguises the reader as a standard terminal error log, saving your progress seamlessly.
+- **Local Lightning-Fast Library**: A zero-dependency local data center built entirely on SQLite. Accurately remembers byte-offsets and silently saves your progress upon exiting.
+- **Deep Flow Reading**: Features rapid bookmarks (`m` key) and localized Kindle-style "Time Left" estimations based on your reading speed.
+- **Batch Folder Import**: Recursively scan and import entire folders of books at once.
+- **I18n Support**: Native support for English and Chinese.
 
-## 💡 为什么是这样？(内心独白)
+## 💡 The Philosophy (Developer's Monologue)
 
-### 产品的本心：为什么要在终端里做阅读器？
-作为一个开发者，IDE 和 Terminal 是我们日常最常驻的舒适区。当我们在编译等待、等待流水线构建或者单纯思维枯竭的 5 到 10 分钟里，常常需要一个能够**迅速切入又迅速抽离**的“精神避难所”。
-刷网页容易被算法劫持，看手机更是会彻底打断心流进程。而终端——这个只有黑底白字、极度纯粹的环境，天生就带有一种克制的隔离感。
-**ReadShell** 试图在这个极度克制的环境里，以最低的启动摩擦力给你提供一处可以随时下潜和浮出的文字世界。它不需要全屏的臃肿软件，不需要花哨的 UI，在你同事的眼里，它就像一个正在执行的本地构建任务，静默而高效。
+### Why build a reader in the terminal?
+As developers, the IDE and Terminal are our natural habitats. When we are waiting for a build, a pipeline to finish, or just experiencing a 5-10 minute mental block, we need a "spiritual refuge" that is easy to slip into and easy to drop out of.
 
-### 技术选型的浪漫
-在技术栈的设计上，为了追求极致的启动响应和最低的资源开销，我们抛弃了臃肿的 Electron 和图形界面：
-- **`Ink` 驱动的 TUI 美学**：用现代化的 React 响应式思维去描绘古老而极客的命令行界面。Flexbox 布局与 Hooks 状态机让控制台程序也能拥有细腻顺滑的反馈边界。
-- **本地绝对主权 (`SQLite`)**：拒绝云端绑架与冗余的网络请求。你所有的阅读记忆、章节骨架和金句书签，都以毫秒级的查询效率安静地存在于你硬盘上的只读账本里。它是彻底私密、极速的数据中枢。
-- **化繁为简的解析哲学**：无论是动辄几十兆的粗糙 TXT，还是内嵌错综复杂 HTML 的精品 EPUB 包，在经过流式切割和文本清洗后，最终都会化为终端里规整的行与列，在每个敲击的顺手瞬间抵达你的屏前。
+Web browsers easily hijack your attention, and phones completely shatter your flow state. But the terminal—a pure, text-only monochrome environment—naturally carries a restrained sense of isolation.
 
-## ⚡ 快速开始
+**ReadShell** attempts to provide a text-based sanctuary with the lowest friction possible within this highly restrained environment. No bloated UI, no distractions. To your coworkers, it just looks like another local build task running silently and efficiently.
 
-### 安装
+### The Romance of Tech Choices
+To achieve ultimate speed and minimal resource overhead, we abandoned Electron and GUI frameworks:
+- **`Ink` TUI Aesthetics**: Drawing an old-school, geeky CLI using Modern React reactive principles. Flexbox and Hooks give CLI apps smooth boundary feedback.
+- **Absolute Local Sovereignty (`SQLite`)**: Rejecting cloud lock-in and redundant network requests. Your reading memories, chapter skeletons, and bookmarks exist cleanly in a lightning-fast read-only ledger on your SSD.
+- **Philosophy of Simplification**: Whether it’s a massive raw TXT or a complex HTML-embedded EPUB, they are streamed, parsed, and cleansed into structured terminal rows, arriving right before your eyes at the press of a key.
+
+## ⚡ Quick Start
+
+### Installation
 
 ```bash
 npm install -g readshell
 ```
 
-### 基本使用
+### Basic Usage
 
 ```bash
-# 导入一本书 (支持 .txt 和 .epub)
-novel import ~/books/my-novel.epub
+# Set Language (en / zh)
+novel lang en
 
-# 恢复上次阅读（零摩擦入口）
+# Import a single book or batch import a folder (.txt and .epub)
+novel import ~/books/
+
+# Resume last read (Zero-friction entry)
 novel resume
 
-# 打开指定书籍
+# Open a specific book
 novel open <book-id>
 
-# 查看书架
+# View library
 novel library
 
-# 移除书籍与记录
+# Remove a book and its records
 novel remove <book-id>
 ```
 
-### 阅读器快捷键
+### Reader Shortcuts
 
-| 快捷键 | 功能 |
+| Key | Action |
 |---|---|
-| `空格` / `j` / `↓` | 下一页 |
-| `k` / `↑` | 上一页 |
-| `c` | 章节列表及书签列表 |
-| `Tab` | 章节弹出层中切换【目录/书签】 |
-| `m` / `M` | 将当前页首行标记为书签 |
-| `b` / `Esc` | Boss Key (老板键)，秒速伪装终端报错并自动存档 |
-| `q` | 正常退出并保存进度 |
-| `?` | 帮助 |
+| `Space` / `j` / `↓` | Next Page |
+| `k` / `↑` | Previous Page |
+| `c` | Open Chapters and Bookmarks list |
+| `Tab` | Switch between Chapters/Bookmarks in menu |
+| `m` / `M` | Add Bookmark at the current page |
+| `b` / `Esc` | Boss Key (disguise terminal as error and save) |
+| `q` | Quit and save progress |
+| `?` | Help |
 
-## 🏗️ 技术栈
+## 🏗️ Tech Stack
 
 - **TypeScript** + **Node.js** (≥ 18)
-- **Ink** — React 范式的终端 UI 框架
-- **SQLite** (`better-sqlite3`) — 零依赖本地数据库
-- **Vitest** — 测试框架
+- **Ink** — React-based Terminal UI framework
+- **SQLite** (`better-sqlite3`) — Zero-dependency local DB
+- **Vitest** — Testing Framework
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 src/
-├── cli/          # 命令层：解析参数，调用 service
-├── ui/           # TUI 层（Ink 组件）
-├── services/     # 业务逻辑层
-├── parsers/      # 文件解析层（txt/epub）
-├── db/           # 数据库层（SQLite）
-├── config/       # 配置管理
-└── utils/        # 工具函数
+├── cli/          # CLI layer: args parsing, command dispatch
+├── ui/           # TUI layer (Ink components)
+├── services/     # Business logic
+├── parsers/      # Format parsers (txt/epub)
+├── db/           # Database layer (SQLite)
+├── config/       # Configuration management
+└── utils/        # Utilities
 ```
 
-## 🛠️ 开发
+## 🛠️ Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 开发模式
+# Dev mode
 npm run dev
 
-# 运行测试
+# Run tests
 npm test
 
-# 构建
+# Build
 npm run build
 
-# 代码检查
+# Lint
 npm run lint
 
-# 格式化
+# Format
 npm run format
 ```
 
-## 📝 许可证
+## 📝 License
 
 [AGPL-3.0](LICENSE)

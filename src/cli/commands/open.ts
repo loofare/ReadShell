@@ -8,6 +8,7 @@ import { BookService } from '../../services/BookService.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { renderApp } from '../../ui/renderApp.js';
 import { logger } from '../../utils/logger.js';
+import { t } from '../../locales/index.js';
 
 export interface OpenArgs {
   target: string;
@@ -15,10 +16,10 @@ export interface OpenArgs {
 
 export const openCommand: CommandModule<object, OpenArgs> = {
   command: 'open <target>',
-  describe: '打开指定书籍（ID 或书名）',
+  describe: t('cli.open.desc'),
   builder: (yargs) => {
     return yargs.positional('target', {
-      describe: '书籍 ID 或书名（支持模糊匹配）',
+      describe: t('cli.open.help'),
       type: 'string',
       demandOption: true,
     });
@@ -29,8 +30,7 @@ export const openCommand: CommandModule<object, OpenArgs> = {
       const book = bookService.findBook(argv.target);
 
       if (!book) {
-        console.log(`✗ 未找到书籍: ${argv.target}`);
-        console.log('  使用 novel library 查看书架中的所有书籍。');
+        console.log(`${t('cli.open.not_found')} ${argv.target}`);
         process.exit(1);
       }
 

@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { ChapterRecord } from '../../db/models/Chapter.js';
 import type { BookmarkRecord } from '../../db/models/Bookmark.js';
+import { t } from '../../locales/index.js';
 
 interface ChapterNavProps {
   chapters: ChapterRecord[];
@@ -101,14 +102,14 @@ export function ChapterNav({
     >
       <Box justifyContent="space-between" marginBottom={1}>
         <Box>
-          <Text bold color={activeTab === 'chapters' ? 'green' : 'gray'}>[全部章节] </Text>
-          <Text bold color={activeTab === 'bookmarks' ? 'green' : 'gray'}>[我的书签]</Text>
+          <Text bold color={activeTab === 'chapters' ? 'green' : 'gray'}>{t('tui.nav.tab.chapters')} </Text>
+          <Text bold color={activeTab === 'bookmarks' ? 'green' : 'gray'}>{t('tui.nav.tab.bookmarks')}</Text>
         </Box>
-        <Text dimColor>Enter 跳转 · Tab 切换 · Esc/q 关闭</Text>
+        <Text dimColor>{t('tui.nav.tips')}</Text>
       </Box>
 
       {visibleItems.length === 0 ? (
-        <Text dimColor>没有记录</Text>
+        <Text dimColor>{t('tui.nav.empty')}</Text>
       ) : (
         visibleItems.map((item, idx) => {
           const actualIndex = windowStart + idx;
@@ -129,7 +130,7 @@ export function ChapterNav({
 
       <Box marginTop={1} justifyContent="flex-end">
         <Text dimColor>
-          第 {Math.floor(selectedIndex / pageSize) + 1} / {Math.ceil(currentList.length / pageSize) || 1} 页
+          {t('tui.nav.page', Math.floor(selectedIndex / pageSize) + 1, Math.ceil(currentList.length / pageSize) || 1)}
         </Text>
       </Box>
     </Box>

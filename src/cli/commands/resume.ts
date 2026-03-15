@@ -8,17 +8,18 @@ import { ProgressService } from '../../services/ProgressService.js';
 import { BookService } from '../../services/BookService.js';
 import { renderApp } from '../../ui/renderApp.js';
 import { logger } from '../../utils/logger.js';
+import { t } from '../../locales/index.js';
 
 export const resumeCommand: CommandModule = {
   command: 'resume',
-  describe: '恢复上次阅读',
+  describe: t('cli.resume.desc'),
   handler: async () => {
     try {
       const progressService = new ProgressService();
       const lastProgress = progressService.getLastOpenedBook();
 
       if (!lastProgress) {
-        console.log('📚 还没有阅读记录。使用 novel import <file> 导入一本书开始阅读。');
+        console.log(t('cli.resume.none'));
         return;
       }
 
@@ -26,7 +27,7 @@ export const resumeCommand: CommandModule = {
       const bookService = new BookService();
       const book = bookService.findBook(lastProgress.book_id);
       if (!book) {
-        console.log('📚 上次阅读的书籍已被删除。使用 novel library 查看书架。');
+        console.log(t('cli.resume.none'));
         return;
       }
 

@@ -29,6 +29,7 @@ import type { BookmarkRecord } from '../../db/models/Bookmark.js';
 import { triggerBossKey } from '../../utils/bossKey.js';
 import { estimateReadingTime, formatReadingTime } from '../../utils/time.js';
 import { logger } from '../../utils/logger.js';
+import { t } from '../../locales/index.js';
 
 interface ReaderPageProps {
   bookId: string;
@@ -105,7 +106,7 @@ function ReaderContent({
     const currentOffset = reader.getCurrentOffset();
     bookmarkServiceRef.current.addBookmark(bookId, markTitle, currentOffset);
     
-    setToastMessage(`✓ 增加书签: ${markTitle}`);
+    setToastMessage(t('tui.reader.bookmark_add', markTitle));
     setTimeout(() => setToastMessage(null), 2000);
   };
 
@@ -240,7 +241,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
     return (
       <Box padding={1} flexDirection="column">
         <Text color="red">✗ {error}</Text>
-        <Text dimColor>按 q 退出</Text>
+        <Text dimColor>{t('common.quit')}</Text>
       </Box>
     );
   }
@@ -249,7 +250,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
   if (!book || !pages) {
     return (
       <Box padding={1}>
-        <Text color="cyan">📖 正在加载...</Text>
+        <Text color="cyan">📖 {t('tui.reader.loading')}</Text>
       </Box>
     );
   }

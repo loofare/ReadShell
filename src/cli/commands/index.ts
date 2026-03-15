@@ -7,5 +7,7 @@ import { resumeCommand } from './resume.js';
 import { openCommand } from './open.js';
 import { libraryCommand } from './library.js';
 import { removeCommand } from './remove.js';
+import { langCommand } from './lang.js';
 
-export const commands = [importCommand, resumeCommand, openCommand, libraryCommand, removeCommand];
+export { importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand };
+export const commands = [importCommand, resumeCommand, openCommand, libraryCommand, removeCommand, langCommand];

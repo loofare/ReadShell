@@ -10,6 +10,7 @@ import { resumeCommand } from './commands/resume.js';
 import { openCommand } from './commands/open.js';
 import { libraryCommand } from './commands/library.js';
 import { removeCommand } from './commands/remove.js';
+import { langCommand } from './commands/lang.js';
 
 export function createParser() {
   return yargs(hideBin(process.argv))
@@ -20,6 +21,7 @@ export function createParser() {
     .command(openCommand)
     .command(libraryCommand)
     .command(removeCommand)
+    .command(langCommand)
     .demandCommand(1, '请指定一个命令。使用 --help 查看可用命令。')
     .strict()
     .alias('h', 'help')

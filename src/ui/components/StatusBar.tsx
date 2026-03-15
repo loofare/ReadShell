@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Box, Text } from 'ink';
+import { t } from '../../locales/index.js';
 
 interface StatusBarProps {
   bookTitle: string;
@@ -34,7 +35,7 @@ export function StatusBar({
 
       <Box>
         {remainingTime && (
-          <Text dimColor>预计剩余 {remainingTime}  </Text>
+          <Text dimColor>{t('tui.reader.status.remaining', remainingTime)}  </Text>
         )}
         <Text color="gray">
           {currentPage}/{totalPages}  
@@ -42,7 +43,7 @@ export function StatusBar({
         <Text color="gray">
           {displayPercent}%  
         </Text>
-        <Text dimColor>q退出</Text>
+        <Text dimColor>{t('common.quit')}</Text>
       </Box>
     </Box>
   );

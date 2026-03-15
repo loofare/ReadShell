@@ -12,12 +12,15 @@ interface ReadShellConfig {
   showStatusBar: boolean;
   /** 阅读模式: 'page' | 'scroll' */
   readingMode: 'page' | 'scroll';
+  /** 界面语言 */
+  language: 'zh' | 'en';
 }
 
 const defaults: ReadShellConfig = {
   linesPerPage: 0,
   showStatusBar: true,
   readingMode: 'page',
+  language: 'zh',
 };
 
 const config = new Conf<ReadShellConfig>({
@@ -30,6 +33,7 @@ export function getConfig(): ReadShellConfig {
     linesPerPage: config.get('linesPerPage'),
     showStatusBar: config.get('showStatusBar'),
     readingMode: config.get('readingMode'),
+    language: config.get('language'),
   };
 }
 

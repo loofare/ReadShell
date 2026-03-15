@@ -7,6 +7,7 @@ import type { CommandModule } from 'yargs';
 import { renderApp } from '../../ui/renderApp.js';
 import { BookService } from '../../services/BookService.js';
 import { logger } from '../../utils/logger.js';
+import { t } from '../../locales/index.js';
 
 export interface LibraryArgs {
   search?: string;
@@ -14,11 +15,11 @@ export interface LibraryArgs {
 
 export const libraryCommand: CommandModule<object, LibraryArgs> = {
   command: 'library',
-  describe: '查看书架列表',
+  describe: t('cli.library.desc'),
   builder: (yargs) => {
     return yargs.option('search', {
       alias: 's',
-      describe: '搜索书名',
+      describe: t('cli.library.help'),
       type: 'string',
     });
   },
@@ -30,11 +31,11 @@ export const libraryCommand: CommandModule<object, LibraryArgs> = {
         const books = bookService.searchBooks(argv.search);
 
         if (books.length === 0) {
-          console.log(`📚 未找到匹配「${argv.search}」的书籍。`);
+          console.log(t('cli.library.search_none', argv.search));
           return;
         }
 
-        console.log(`📚 搜索结果 (${books.length} 本):\n`);
+        console.log(t('cli.library.search_result', books.length));
         books.forEach((book, index) => {
           console.log(`  ${index + 1}. ${book.title}  [${book.id}]  (${book.format})`);
         });

@@ -10,6 +10,7 @@ import { BookService } from '../../services/BookService.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { RecentService } from '../../services/RecentService.js';
 import type { BookRecord } from '../../db/models/Book.js';
+import { t } from '../../locales/index.js';
 
 interface LibraryPageProps {
   onNavigate: (page: PageRoute, bookId?: string, byteOffset?: number) => void;
@@ -86,7 +87,7 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   if (loading) {
     return (
       <Box padding={1}>
-        <Text color="cyan">📚 加载书架...</Text>
+        <Text color="cyan">{t('tui.lib.loading')}</Text>
       </Box>
     );
   }
@@ -94,11 +95,11 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   if (books.length === 0) {
     return (
       <Box flexDirection="column" padding={1}>
-        <Text bold color="cyan">📚 书架</Text>
+        <Text bold color="cyan">{t('tui.lib.empty.title')}</Text>
         <Box marginTop={1} flexDirection="column">
-          <Text dimColor>书架为空。使用 novel import &lt;file&gt; 导入你的第一本书。</Text>
+          <Text dimColor>{t('tui.lib.empty.desc')}</Text>
           <Box marginTop={1}>
-            <Text dimColor>按 q 退出</Text>
+            <Text dimColor>{t('common.quit')}</Text>
           </Box>
         </Box>
       </Box>
@@ -107,8 +108,8 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
 
   return (
     <Box flexDirection="column" padding={1}>
-      <Text bold color="cyan">📚 书架 ({books.length} 本)</Text>
-      <Text dimColor>  ↑↓/jk 选择 · Enter 打开 · d/x 删除 · q 退出</Text>
+      <Text bold color="cyan">{t('tui.lib.title', books.length)}</Text>
+      <Text dimColor>{t('tui.lib.tips')}</Text>
       <Box flexDirection="column" marginTop={1}>
         {books.map((book, index) => {
           const isSelected = index === selectedIndex;
