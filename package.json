@@ -1,6 +1,6 @@
 {
   "name": "readshell",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "终端内低打断轻阅读工具 · CLI Light Reading Tool for Developers",
   "type": "module",
   "main": "dist/index.js",
