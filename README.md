@@ -70,8 +70,8 @@ novel resume
 # Open a specific book
 novel open <book-id>
 
-# View library
-novel library
+# View book list
+novel list
 
 # Remove a book and its records
 novel remove <book-id>

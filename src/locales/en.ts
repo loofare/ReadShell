@@ -27,7 +27,7 @@ const en: LocaleDictionary = {
   'cli.open.help': 'Book ID or title (fuzzy match)',
   'cli.open.not_found': '✗ Book not found:',
 
-  'cli.library.desc': 'View library',
+  'cli.library.desc': 'View book list / library',
   'cli.library.help': 'Optional keyword search',
   'cli.library.none': '✗ Library is empty. Use `novel import <file>` to import your first book.',
   'cli.library.search_none': '📚 No books found matching "{0}".',

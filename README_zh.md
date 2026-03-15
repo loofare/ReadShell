@@ -65,8 +65,8 @@ novel resume
 # 打开指定书籍
 novel open <book-id>
 
-# 查看书架
-novel library
+# 查看书架书籍列表
+novel list
 
 # 移除书籍与记录
 novel remove <book-id>

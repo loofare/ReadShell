@@ -25,15 +25,8 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
   const isRawModeSupported = process.stdin.isTTY ?? false;
 
   useEffect(() => {
-    const recentService = new RecentService();
-    const recentBooks = recentService.getRecentBooks();
-
-    if (recentBooks.length > 0) {
-      setBooks(recentBooks);
-    } else {
-      const bookService = new BookService();
-      setBooks(bookService.getAllBooks());
-    }
+    const bookService = new BookService();
+    setBooks(bookService.getAllBooks());
     setLoading(false);
   }, []);
 

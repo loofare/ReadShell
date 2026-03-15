@@ -25,7 +25,7 @@ export default {
   'cli.open.help': '书籍 ID 或书名（支持模糊匹配）',
   'cli.open.not_found': '✗ 未找到匹配书籍:',
 
-  'cli.library.desc': '查看书架列表',
+  'cli.library.desc': '查看书架书籍列表',
   'cli.library.help': '可选关键字搜索',
   'cli.library.none': '✗ 书架为空。使用 novel import <file> 导入你的第一本书。',
   'cli.library.search_none': '📚 未找到匹配「{0}」的书籍。',

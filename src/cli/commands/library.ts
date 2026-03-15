@@ -14,7 +14,8 @@ export interface LibraryArgs {
 }
 
 export const libraryCommand: CommandModule<object, LibraryArgs> = {
-  command: 'library',
+  command: 'list',
+  aliases: ['library'],
   describe: t('cli.library.desc'),
   builder: (yargs) => {
     return yargs.option('search', {
