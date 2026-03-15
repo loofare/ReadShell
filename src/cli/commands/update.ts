@@ -11,16 +11,8 @@ export const updateCommand: CommandModule = {
     try {
       console.log(t('cli.update.checking'));
 
-      // 提取本地 package.json 版本号
-      let localVersion = '0.0.0';
-      try {
-        const pkgUrl = new URL('../../package.json', import.meta.url);
-        const pkg = JSON.parse(readFileSync(pkgUrl, 'utf-8'));
-        localVersion = pkg.version;
-      } catch (err) {
-        // Fallback for DEV mode
-         localVersion = '0.2.0';
-      }
+      // 获取本地版本号 (由 tsup 在构建时注入)
+      const localVersion = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '0.2.2';
 
       // 获取 NPM 最新版本
       const npmOutput = execSync('npm view readshell version', { encoding: 'utf-8' });
