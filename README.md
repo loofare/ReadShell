@@ -41,6 +41,8 @@ The most important command. Picks up exactly where you left off, down to the byt
 
 **🥷 Boss Key (`b` / `Esc`) — Instant disguise**
 One keypress transforms the reader into a convincing terminal error log. Your secret is safe.
+![Boss Key Demo](./docs/bosskey.png)
+*Boss Key wipes the scrollback buffer and shows a fake error. Use `novel resume` to instantly jump back when safe.*
 
 **⏱ Reading time estimate**
 Calibrated to your actual reading speed. Tells you if you have time for one more chapter.
