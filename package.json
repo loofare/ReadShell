@@ -35,7 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/loofare/ReadShell"
+    "url": "git+https://github.com/loofare/ReadShell.git"
   },
   "homepage": "https://readshell.com",
   "engines": {
