@@ -9,7 +9,7 @@
 [![npm version](https://img.shields.io/npm/v/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![npm downloads](https://img.shields.io/npm/dm/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
 
 *A low-friction reading tool for developers who never leave the terminal. Free and open source — no accounts, no servers, no paid tier.*
 
@@ -157,7 +157,7 @@ Your reading history lives entirely on your local machine in a SQLite file (plus
 
 ## Tech Stack
 
-- **TypeScript** + **Node.js** ≥ 18
+- **TypeScript** + **Node.js** ≥ 20
 - **Ink** — React-based TUI framework
 - **SQLite** (`better-sqlite3`) — local-first, zero-dependency storage
 - **Vitest** — testing

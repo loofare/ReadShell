@@ -9,7 +9,7 @@
 [![npm version](https://img.shields.io/npm/v/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![npm downloads](https://img.shields.io/npm/dm/readshell.svg)](https://www.npmjs.com/package/readshell)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
 
 *为不离开终端的开发者设计的低打断轻阅读工具。完全免费开源——没有账号、没有服务器、没有付费墙。*
 
@@ -157,7 +157,7 @@ ReadShell 不要求你切换上下文。它安静地待在你的工作流里—�
 
 ## 技术栈
 
-- **TypeScript** + **Node.js** ≥ 18
+- **TypeScript** + **Node.js** ≥ 20
 - **Ink** — React 范式的 TUI 框架
 - **SQLite** (`better-sqlite3`) — 本地优先、零依赖存储
 - **Vitest** — 测试

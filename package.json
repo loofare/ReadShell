@@ -39,10 +39,10 @@
   },
   "homepage": "https://readshell.com",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
-    "better-sqlite3": "^11.0.0",
+    "better-sqlite3": "^12.11.1",
     "chardet": "^2.0.0",
     "conf": "^13.0.0",
     "epub2": "^3.0.2",

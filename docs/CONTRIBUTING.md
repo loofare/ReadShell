@@ -4,7 +4,7 @@
 
 ## 开发环境设置
 
-1. 确保安装了 Node.js >= 18
+1. 确保安装了 Node.js >= 20
 2. Fork 并克隆仓库
 3. 安装依赖: `npm install`
 4. 运行测试: `npm test`
