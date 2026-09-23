@@ -9,19 +9,25 @@ import { mkdirSync, existsSync } from 'fs';
 
 /**
  * 获取应用数据目录
- * ~/.config/readshell/ (macOS/Linux)
+ * 默认 ~/.config/readshell/（macOS 为 ~/Library/Application Support/readshell），
+ * 可用环境变量 READSHELL_HOME 覆盖（测试或多实例隔离用）
  */
 export function getAppDataDir(): string {
-  const platform = process.platform;
+  const override = process.env['READSHELL_HOME'];
   let configDir: string;
 
-  if (platform === 'darwin') {
-    configDir = join(homedir(), 'Library', 'Application Support', 'readshell');
-  } else if (platform === 'win32') {
-    configDir = join(process.env['APPDATA'] || join(homedir(), 'AppData', 'Roaming'), 'readshell');
+  if (override) {
+    configDir = override;
   } else {
-    // Linux / 其他
-    configDir = join(process.env['XDG_CONFIG_HOME'] || join(homedir(), '.config'), 'readshell');
+    const platform = process.platform;
+    if (platform === 'darwin') {
+      configDir = join(homedir(), 'Library', 'Application Support', 'readshell');
+    } else if (platform === 'win32') {
+      configDir = join(process.env['APPDATA'] || join(homedir(), 'AppData', 'Roaming'), 'readshell');
+    } else {
+      // Linux / 其他
+      configDir = join(process.env['XDG_CONFIG_HOME'] || join(homedir(), '.config'), 'readshell');
+    }
   }
 
   // 确保目录存在

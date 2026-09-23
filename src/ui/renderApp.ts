@@ -7,6 +7,7 @@ import React from 'react';
 import { render } from 'ink';
 import { App, type PageRoute } from './App.js';
 import { isBossKeyActive, performBossKeyAction } from '../utils/bossKey.js';
+import { drainPendingSync } from '../utils/pendingSync.js';
 
 interface RenderOptions {
   initialPage?: PageRoute;
@@ -29,11 +30,13 @@ export function renderApp(options: RenderOptions = {}): void {
   );
 
   waitUntilExit()
-    .then(() => {
-      // 检查是否是因为老板键退出
+    .then(async () => {
+      // 检查是否是因为老板键退出：先输出伪装画面，再静默等待同步
       if (isBossKeyActive()) {
         performBossKeyAction();
       }
+      // 等待退出前注册的同步完成（最多 2s），保证进度/书签/会话不丢
+      await drainPendingSync(2000);
       process.exit(0);
     })
     .catch(() => {

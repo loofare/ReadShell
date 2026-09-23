@@ -9,7 +9,7 @@ export interface BookRecord {
   title: string;
   author: string | null;
   file_path: string;
-  format: 'txt' | 'epub';
+  format: 'txt' | 'epub' | 'md';
   file_hash: string;
   file_size: number | null;
   created_at: number;
@@ -57,6 +57,14 @@ export class BookModel {
   findAll(): BookRecord[] {
     const db = getDb();
     return db.prepare('SELECT * FROM books ORDER BY created_at DESC').all() as BookRecord[];
+  }
+
+  /**
+   * 更新书名/作者（文件夹同步导入后恢复远端元数据用）
+   */
+  updateMeta(id: string, title: string, author: string | null): void {
+    const db = getDb();
+    db.prepare('UPDATE books SET title = ?, author = ? WHERE id = ?').run(title, author, id);
   }
 
   /**

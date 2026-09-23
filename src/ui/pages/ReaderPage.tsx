@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { randomUUID } from 'node:crypto';
 import { Box, Text, useApp, useStdout } from 'ink';
 import type { PageRoute } from '../App.js';
 import { TextRenderer } from '../components/TextRenderer.js';
@@ -26,11 +27,14 @@ import { RecentService } from '../../services/RecentService.js';
 import { BookmarkService } from '../../services/BookmarkService.js';
 import type { ChapterRecord } from '../../db/models/Chapter.js';
 import type { BookmarkRecord } from '../../db/models/Bookmark.js';
+import { ReadingSessionModel } from '../../db/models/ReadingSession.js';
 import { triggerBossKey } from '../../utils/bossKey.js';
 import { estimateReadingTime, formatReadingTime } from '../../utils/time.js';
+import { registerPendingSync } from '../../utils/pendingSync.js';
 import { logger } from '../../utils/logger.js';
 import { t } from '../../locales/index.js';
 import { getConfig } from '../../config/AppConfig.js';
+import { createFolderSyncService } from '../../services/SyncFolderService.js';
 
 interface ReaderPageProps {
   bookId: string;
@@ -49,6 +53,7 @@ function ReaderContent({
   termHeight,
   contentHeight,
   lineSpacing,
+  totalChars,
 }: {
   book: BookRecord;
   bookId: string;
@@ -57,11 +62,13 @@ function ReaderContent({
   termHeight: number;
   contentHeight: number;
   lineSpacing: number;
+  totalChars: number;
 }) {
   const { exit } = useApp();
   const [chapterTitle, setChapterTitle] = useState<string | undefined>();
   const [currentChapter, setCurrentChapter] = useState<ChapterRecord | undefined>();
   const [showChapterNav, setShowChapterNav] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [allChapters, setAllChapters] = useState<ChapterRecord[]>([]);
   const [allBookmarks, setAllBookmarks] = useState<BookmarkRecord[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -125,7 +132,45 @@ function ReaderContent({
   };
 
   /**
-   * 自动在组件卸载时保存进度
+   * 卸载时（仅一次）：写入本次阅读会话，并注册退出同步
+   * renderApp 会在 process.exit 前等待该同步完成（带超时）
+   */
+  const readerRef = useRef(reader);
+  readerRef.current = reader;
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    const startOffset = readerRef.current.getCurrentOffset();
+
+    return () => {
+      const endedAt = Date.now();
+      const endOffset = readerRef.current.getCurrentOffset();
+
+      // 跳过过短的会话（< 5s），bytes_read 不允许为负
+      if (endedAt - startedAt >= 5000) {
+        new ReadingSessionModel().insert({
+          id: randomUUID(),
+          book_id: bookId,
+          started_at: startedAt,
+          ended_at: endedAt,
+          bytes_read: Math.max(0, endOffset - startOffset),
+        });
+      }
+
+      // 注册退出同步：写本机设备文件并合并其他设备（文件夹同步，静默失败）
+      registerPendingSync(
+        (async () => {
+          const syncService = createFolderSyncService();
+          if (syncService) {
+            await syncService.sync();
+          }
+        })().catch(() => {}),
+      );
+    };
+  }, [bookId, book]);
+
+  /**
+   * 翻页/卸载时自动保存进度（cleanup 在每次渲染间也会触发，保证进度不丢）
    */
   useEffect(() => {
     return () => {
@@ -146,26 +191,33 @@ function ReaderContent({
         exit();                // 告诉 Ink 退出，renderApp 会接手后续伪装动作
       },
       onBookmarkAdd: handleAddBookmark,
+      onGoToStart: () => reader.goToFirst(),
+      onGoToEnd: () => reader.goToLast(),
+      onHelp: () => setShowHelp((v) => !v),
     },
-    !showChapterNav, // 如果浮层显示，则停止普通的阅读快捷键
+    !showChapterNav && !showHelp, // 浮层显示时停止普通的阅读快捷键
   );
 
   const currentPage = reader.getCurrentPage();
   const currentLines = currentPage?.lines ?? [];
-  // The contentHeight prop is already passed, but the instruction redefines it.
-  // Assuming the user intends to use this new calculation for contentHeight within ReaderContent.
   const calculatedContentHeight = Math.max(1, termHeight - 2);
 
-  // 计算剩余阅读时间：总字符近似于字节数的 1/3 (utf-8 场景下)，中文字符占绝大部分
-  const totalChars = (book.file_size ?? 0) / 3;
+  // 计算剩余阅读时间：使用解析后的实际文本长度（epub 压缩文件大小不可靠）
   const remainingChars = Math.max(0, totalChars * (1 - reader.getPercent()));
   const remainingMinutes = estimateReadingTime(remainingChars, true);
   const remainingTimeStr = formatReadingTime(remainingMinutes);
 
   return (
     <Box flexDirection="column" height={termHeight}>
-      {/* 相对定位于容器中，使用 flex 布局进行展现。章节模式下隐藏正文 */}
-      {!showChapterNav ? (
+      {showHelp ? (
+        <Box flexDirection="column" padding={1}>
+          <Text bold color="cyan">{t('tui.help.title')}</Text>
+          <Text>{t('tui.help.next')}</Text>
+          <Text>{t('tui.help.prev')}</Text>
+          <Text>{t('tui.help.nav')}</Text>
+          <Text>{t('tui.help.boss')}</Text>
+        </Box>
+      ) : !showChapterNav ? (
         <>
           <Box flexDirection="column" flexGrow={1} paddingX={1}>
             <TextRenderer lines={currentLines} height={calculatedContentHeight} lineSpacing={lineSpacing} />
@@ -207,6 +259,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
 
   const [book, setBook] = useState<BookRecord | null>(null);
   const [pages, setPages] = useState<Page[] | null>(null);
+  const [totalChars, setTotalChars] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const termWidth = stdout?.columns ?? 80;
@@ -235,8 +288,8 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
       const recentService = new RecentService();
       recentService.recordOpen(bookId);
 
-      // 异步读取并解析文件内容 (支持 TXT 和 EPUB)
-      parseFile(bookRecord.file_path, bookRecord.format as 'txt' | 'epub')
+      // 异步读取并解析文件内容 (支持 TXT / EPUB / MD)
+      parseFile(bookRecord.file_path, bookRecord.format)
         .then((parsed: ParsedBook) => {
           // 核心优化：如果处于滚动模式，步进减半以实现平滑过渡
           const stepSize = appConfig.readingMode === 'scroll' 
@@ -246,6 +299,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
           // 分页
           const paginatedPages = paginate(parsed.content, termWidth - 2, contentHeight, stepSize);
           setPages(paginatedPages);
+          setTotalChars(parsed.content.length);
           logger.debug(`加载完成: ${bookRecord.title}, ${paginatedPages.length} 页, 模式: ${appConfig.readingMode}`);
         })
         .catch((err: Error) => {
@@ -290,6 +344,7 @@ export function ReaderPage({ bookId, initialByteOffset, onNavigate: _onNavigate 
       termHeight={termHeight}
       contentHeight={contentHeight}
       lineSpacing={lineSpacing}
+      totalChars={totalChars}
     />
   );
 }

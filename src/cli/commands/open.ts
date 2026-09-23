@@ -9,6 +9,7 @@ import { ProgressService } from '../../services/ProgressService.js';
 import { renderApp } from '../../ui/renderApp.js';
 import { logger } from '../../utils/logger.js';
 import { t } from '../../locales/index.js';
+import { syncOnOpen } from '../../services/SyncFolderService.js';
 
 export interface OpenArgs {
   target: string;
@@ -33,6 +34,8 @@ export const openCommand: CommandModule<object, OpenArgs> = {
         console.log(`${t('cli.open.not_found')} ${argv.target}`);
         process.exit(1);
       }
+      // 打开前先从同步文件夹拉取其他设备的进度/书签（最多 ~2s，静默失败）
+      await syncOnOpen();
 
       // 检查是否有之前的阅读进度
       const progressService = new ProgressService();

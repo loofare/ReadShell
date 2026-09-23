@@ -12,6 +12,10 @@ import { libraryCommand } from './commands/library.js';
 import { removeCommand } from './commands/remove.js';
 import { langCommand } from './commands/lang.js';
 import { updateCommand } from './commands/update.js';
+import { configCommand } from './commands/config.js';
+import { syncCommand } from './commands/sync.js';
+import { bookmarksCommand } from './commands/bookmarks.js';
+import { statsCommand } from './commands/stats.js';
 
 export function createParser() {
   const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'dev';
@@ -26,6 +30,10 @@ export function createParser() {
     .command(removeCommand)
     .command(langCommand)
     .command(updateCommand)
+    .command(configCommand)
+    .command(syncCommand)
+    .command(bookmarksCommand)
+    .command(statsCommand)
     .demandCommand(1, '请指定一个命令。使用 --help 查看可用命令。')
     .strict()
     .alias('h', 'help')

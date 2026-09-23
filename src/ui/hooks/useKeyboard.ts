@@ -13,6 +13,8 @@ interface KeyboardHandlers {
   onHelp?: () => void;
   onBossKey?: () => void;
   onBookmarkAdd?: () => void;
+  onGoToStart?: () => void;
+  onGoToEnd?: () => void;
 }
 
 export function useKeyboard(handlers: KeyboardHandlers, isActive: boolean = true) {
@@ -25,9 +27,17 @@ export function useKeyboard(handlers: KeyboardHandlers, isActive: boolean = true
       handlers.onNext?.();
     }
 
-    // 上一页：k / 上箭头 / b
-    if (input === 'k' || key.upArrow || input === 'b') {
+    // 上一页：k / 上箭头
+    if (input === 'k' || key.upArrow) {
       handlers.onPrev?.();
+    }
+
+    // 跳转：g 首页 / G 末页
+    if (input === 'g') {
+      handlers.onGoToStart?.();
+    }
+    if (input === 'G') {
+      handlers.onGoToEnd?.();
     }
 
     // 退出：q

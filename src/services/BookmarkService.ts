@@ -17,11 +17,14 @@ export class BookmarkService {
    * @param title 该书签展现给用户的文案（一句话大纲）
    */
   addBookmark(bookId: string, title: string, byteOffset: number): void {
+    const now = Date.now();
     this.bookmarkModel.insert({
       book_id: bookId,
       title,
       byte_offset: byteOffset,
-      created_at: Date.now(),
+      created_at: now,
+      updated_at: now,
+      deleted: 0,
     });
   }
 

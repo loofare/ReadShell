@@ -8,6 +8,7 @@ import { Box, Text, useApp } from 'ink';
 import type { PageRoute } from '../App.js';
 import { ProgressService } from '../../services/ProgressService.js';
 import { BookModel, type BookRecord } from '../../db/models/Book.js';
+import { syncOnOpen } from '../../services/SyncFolderService.js';
 
 interface ResumePageProps {
   onNavigate: (page: PageRoute, bookId?: string, byteOffset?: number) => void;
@@ -18,25 +19,28 @@ export function ResumePage({ onNavigate }: ResumePageProps) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const progressService = new ProgressService();
-    const lastProgress = progressService.getLastOpenedBook();
+    // 先从同步文件夹拉取其他设备的进度（最多 ~2s，静默失败）
+    void syncOnOpen().finally(() => {
+      const progressService = new ProgressService();
+      const lastProgress = progressService.getLastOpenedBook();
 
-    if (!lastProgress) {
-      setChecking(false);
-      return;
-    }
+      if (!lastProgress) {
+        setChecking(false);
+        return;
+      }
 
-    // 验证书籍存在
-    const bookModel = new BookModel();
-    const book = bookModel.findById(lastProgress.book_id);
+      // 验证书籍存在
+      const bookModel = new BookModel();
+      const book = bookModel.findById(lastProgress.book_id);
 
-    if (!book) {
-      setChecking(false);
-      return;
-    }
+      if (!book) {
+        setChecking(false);
+        return;
+      }
 
-    // 自动跳转到阅读器
-    onNavigate('reader', book.id, lastProgress.byte_offset);
+      // 自动跳转到阅读器
+      onNavigate('reader', book.id, lastProgress.byte_offset);
+    });
   }, [onNavigate]);
 
   if (checking) {

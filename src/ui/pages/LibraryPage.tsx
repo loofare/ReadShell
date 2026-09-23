@@ -11,6 +11,7 @@ import { ProgressService } from '../../services/ProgressService.js';
 import { RecentService } from '../../services/RecentService.js';
 import type { BookRecord } from '../../db/models/Book.js';
 import { t } from '../../locales/index.js';
+import { syncOnOpen } from '../../services/SyncFolderService.js';
 
 interface LibraryPageProps {
   onNavigate: (page: PageRoute, bookId?: string, byteOffset?: number) => void;
@@ -66,13 +67,15 @@ export function LibraryPage({ onNavigate }: LibraryPageProps) {
       return;
     }
 
-    // Enter 打开选中的书
+    // Enter 打开选中的书（先拉取同步文件夹里的其他设备进度）
     if (key.return) {
       const selected = books[selectedIndex];
       if (selected) {
-        const progressService = new ProgressService();
-        const progress = progressService.getProgress(selected.id);
-        onNavigate('reader', selected.id, progress?.byte_offset ?? 0);
+        void syncOnOpen().finally(() => {
+          const progressService = new ProgressService();
+          const progress = progressService.getProgress(selected.id);
+          onNavigate('reader', selected.id, progress?.byte_offset ?? 0);
+        });
       }
     }
   }, { isActive: isRawModeSupported });

@@ -6,7 +6,7 @@
 import { getDb } from './client.js';
 import { logger } from '../utils/logger.js';
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 4;
 
 /**
  * 初始化数据库（建表 + 版本管理）
@@ -89,6 +89,28 @@ function migrate(db: ReturnType<typeof getDb>, fromVersion: number): void {
       );
 
       CREATE INDEX IF NOT EXISTS idx_bookmarks_book ON bookmarks(book_id);
+    `,
+    3: `
+      -- 阅读会话（用于统计与跨设备同步）
+      CREATE TABLE IF NOT EXISTS reading_sessions (
+        id         TEXT PRIMARY KEY,
+        book_id    TEXT NOT NULL REFERENCES books(id),
+        started_at INTEGER NOT NULL,
+        ended_at   INTEGER NOT NULL,
+        bytes_read INTEGER NOT NULL DEFAULT 0,
+        synced     INTEGER NOT NULL DEFAULT 0
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_sessions_book ON reading_sessions(book_id);
+    `,
+    4: `
+      -- 书签墓碑：文件夹同步需要传播删除事件
+      ALTER TABLE bookmarks ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE bookmarks ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0;
+      UPDATE bookmarks SET updated_at = created_at;
+
+      -- 文件夹同步按 id 去重合并会话，不再需要 synced 标记
+      ALTER TABLE reading_sessions DROP COLUMN synced;
     `,
   };
 

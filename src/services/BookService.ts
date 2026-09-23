@@ -10,9 +10,12 @@ import { BookModel, type BookRecord } from '../db/models/Book.js';
 import { ChapterModel } from '../db/models/Chapter.js';
 import { RecentModel } from '../db/models/Recent.js';
 import { ProgressModel } from '../db/models/Progress.js';
+import { BookmarkModel } from '../db/models/Bookmark.js';
+import { ReadingSessionModel } from '../db/models/ReadingSession.js';
 import { parseFile } from '../parsers/index.js';
 import { computeFileHash } from '../utils/hash.js';
 import { logger } from '../utils/logger.js';
+import { t } from '../locales/index.js';
 
 export class BookService {
   private bookModel = new BookModel();
@@ -34,7 +37,7 @@ export class BookService {
     // 检测文件格式
     const format = this.detectFormat(absPath);
     if (!format) {
-      throw new Error('不支持的文件格式。目前支持: .txt, .epub');
+      throw new Error(t('cli.import.unsupported'));
     }
 
     // 计算文件 hash 用于去重
@@ -115,16 +118,19 @@ export class BookService {
     this.chapterModel.deleteByBookId(id);
     this.progressModel.delete(id);
     this.recentModel.delete(id);
+    new BookmarkModel().deleteByBookId(id);
+    new ReadingSessionModel().deleteByBookId(id);
     this.bookModel.delete(id);
   }
 
   /**
    * 检测文件格式
    */
-  private detectFormat(filePath: string): 'txt' | 'epub' | null {
+  private detectFormat(filePath: string): 'txt' | 'epub' | 'md' | null {
     const ext = filePath.toLowerCase().split('.').pop();
     if (ext === 'txt') return 'txt';
     if (ext === 'epub') return 'epub';
+    if (ext === 'md') return 'md';
     return null;
   }
 }

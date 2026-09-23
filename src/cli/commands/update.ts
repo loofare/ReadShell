@@ -28,7 +28,7 @@ export const updateCommand: CommandModule = {
       }
 
       console.log(t('cli.update.updating', latestVersion, localVersion));
-      
+
       // 执行升级指令
       execSync('npm install -g readshell@latest', { stdio: 'inherit' });
       

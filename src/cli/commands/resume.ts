@@ -9,12 +9,16 @@ import { BookService } from '../../services/BookService.js';
 import { renderApp } from '../../ui/renderApp.js';
 import { logger } from '../../utils/logger.js';
 import { t } from '../../locales/index.js';
+import { syncOnOpen } from '../../services/SyncFolderService.js';
 
 export const resumeCommand: CommandModule = {
   command: 'resume',
   describe: t('cli.resume.desc'),
   handler: async () => {
     try {
+      // 恢复前先从同步文件夹拉取其他设备的进度（最多 ~2s，静默失败）
+      await syncOnOpen();
+
       const progressService = new ProgressService();
       const lastProgress = progressService.getLastOpenedBook();
 

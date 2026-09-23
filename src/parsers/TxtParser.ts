@@ -64,7 +64,7 @@ export async function parseTxt(filePath: string): Promise<ParsedBook> {
 function extractTitle(filePath: string): string {
   const basename = filePath.split('/').pop() || filePath;
   // 去掉扩展名
-  return basename.replace(/\.txt$/i, '').trim() || '未命名';
+  return basename.replace(/\.(txt|md)$/i, '').trim() || '未命名';
 }
 
 /**

@@ -11,9 +11,11 @@ export type { ParsedBook, ParsedChapter } from './TxtParser.js';
 /**
  * 根据格式解析文件
  */
-export async function parseFile(filePath: string, format: 'txt' | 'epub'): Promise<ParsedBook> {
+export async function parseFile(filePath: string, format: 'txt' | 'epub' | 'md'): Promise<ParsedBook> {
   switch (format) {
     case 'txt':
+    case 'md':
+      // Markdown 按纯文本处理
       return parseTxt(filePath);
     case 'epub':
       return parseEpub(filePath);

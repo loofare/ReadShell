@@ -1,6 +1,6 @@
 {
   "name": "readshell",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "终端内低打断轻阅读工具 · CLI Light Reading Tool for Developers",
   "type": "module",
   "main": "dist/index.js",
@@ -31,8 +31,13 @@
     "txt",
     "reading"
   ],
-  "author": "",
-  "license": "AGPL-3.0",
+  "author": "davidy",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loofare/ReadShell"
+  },
+  "homepage": "https://readshell.com",
   "engines": {
     "node": ">=18"
   },

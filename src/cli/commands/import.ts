@@ -27,7 +27,7 @@ function scanDirectory(dir: string): string[] {
         results = results.concat(scanDirectory(fullPath));
       } else {
         const ext = extname(fullPath).toLowerCase();
-        if (ext === '.txt' || ext === '.epub') {
+        if (ext === '.txt' || ext === '.epub' || ext === '.md') {
           results.push(fullPath);
         }
       }

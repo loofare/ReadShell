@@ -72,6 +72,14 @@ export function useReader(pages: Page[], initialByteOffset?: number) {
     }));
   }, [pages]);
 
+  const goToFirst = useCallback(() => {
+    setState((prev) => ({ ...prev, currentPage: 0 }));
+  }, []);
+
+  const goToLast = useCallback(() => {
+    setState((prev) => ({ ...prev, currentPage: Math.max(0, prev.totalPages - 1) }));
+  }, []);
+
   const getCurrentPage = useCallback((): Page | undefined => {
     return pages[state.currentPage];
   }, [state.currentPage, pages]);
@@ -97,6 +105,8 @@ export function useReader(pages: Page[], initialByteOffset?: number) {
     prevPage,
     goToPage,
     goToOffset,
+    goToFirst,
+    goToLast,
     getCurrentPage,
     getCurrentOffset,
     getPercent,
