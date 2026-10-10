@@ -11,9 +11,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-green.svg)](https://nodejs.org)
 
-*ReadShell 是终端里的书架：一个为开发者设计的命令行阅读工具，支持 txt / epub / md，本地优先、无需账号，完全免费开源（MIT 协议）。 — [readshell.com](https://readshell.com/docs/)*
-
-*A command-line reader built for developers: txt / epub / md, local-first, no account, free and open source under the MIT license. — [readshell.com](https://readshell.com/docs/)*
+*ReadShell is a bookshelf in your terminal: a command-line reader built for developers, supporting txt / epub / md, local-first, no account required, free and open source under the MIT license. — [readshell.com](https://readshell.com/docs/)*
 
 ![ReadShell Demo](./docs/demo.gif)
 
